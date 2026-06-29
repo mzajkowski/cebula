@@ -1,21 +1,30 @@
-<svg width="248" height="64" viewBox="0 0 248 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">
+<svg width="252" height="64" viewBox="0 0 252 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">Cebula</title>
-  <desc id="desc">Cebula brand logo with hexagonal icon and wordmark on transparent background.</desc>
+  <desc id="desc">Cebula brand logo with key icon concept: hex frame, network nodes, and calculator cells.</desc>
   <g transform="translate(4 4)">
-    <path d="M28 2.8L50.5 15.8V40.2L28 53.2L5.5 40.2V15.8L28 2.8Z" stroke="#F2F7FB" stroke-width="2.6" stroke-linejoin="round"/>
-    <circle cx="13.2" cy="17.4" r="3.45" fill="#CFF4EE"/>
-    <circle cx="12.4" cy="32.6" r="3.45" fill="#17CBB5"/>
-    <circle cx="22.1" cy="25" r="3.45" fill="#8AEEE1"/>
-    <path d="M15.6 19.7L19.5 22.9" stroke="#8AEEE1" stroke-width="1.9" stroke-linecap="round"/>
-    <path d="M15.1 30.1L19.5 26.9" stroke="#8AEEE1" stroke-width="1.9" stroke-linecap="round"/>
-    <rect x="27.2" y="14.2" width="19.3" height="23.6" rx="2.3" fill="#14BBA6"/>
-    <path d="M32.9 19.5H37.7" stroke="#05243F" stroke-width="1.8" stroke-linecap="round"/>
-    <path d="M35.3 17.1V21.9" stroke="#05243F" stroke-width="1.8" stroke-linecap="round"/>
-    <path d="M41.6 19.5H46" stroke="#05243F" stroke-width="1.8" stroke-linecap="round"/>
-    <path d="M33.2 28.4L37.4 24.2" stroke="#05243F" stroke-width="1.8" stroke-linecap="round"/>
-    <path d="M33.2 24.2L37.4 28.4" stroke="#05243F" stroke-width="1.8" stroke-linecap="round"/>
-    <path d="M42 28H46.3" stroke="#05243F" stroke-width="1.8" stroke-linecap="round"/>
-    <path d="M42 30.9H46.3" stroke="#05243F" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M28 4L49 16V40L28 52L7 40V16L28 4Z" stroke="#EAF4FF" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M28 4V10" stroke="#EAF4FF" stroke-width="3" stroke-linecap="round"/>
+    <path d="M28 46V52" stroke="#EAF4FF" stroke-width="3" stroke-linecap="round"/>
+
+    <circle cx="13" cy="19" r="4" fill="#BDECE5"/>
+    <circle cx="12" cy="33" r="4" fill="#14BBA6"/>
+    <circle cx="22" cy="26" r="4" fill="#83EDE0"/>
+    <path d="M15.8 21.6L19.4 24" stroke="#83EDE0" stroke-width="2" stroke-linecap="round"/>
+    <path d="M15.2 30.4L19.4 27.6" stroke="#83EDE0" stroke-width="2" stroke-linecap="round"/>
+
+    <rect x="27" y="15" width="20" height="24" rx="2" fill="#14BBA6"/>
+    <path d="M31 15V39" stroke="#0A2A45" stroke-width="1" opacity="0.35"/>
+    <path d="M39 15V39" stroke="#0A2A45" stroke-width="1" opacity="0.35"/>
+    <path d="M27 23H47" stroke="#0A2A45" stroke-width="1" opacity="0.35"/>
+    <path d="M27 31H47" stroke="#0A2A45" stroke-width="1" opacity="0.35"/>
+
+    <path d="M34 19H36" stroke="#072239" stroke-width="2" stroke-linecap="round"/>
+    <path d="M35 18V20" stroke="#072239" stroke-width="2" stroke-linecap="round"/>
+    <path d="M42.5 19H44.5" stroke="#072239" stroke-width="2" stroke-linecap="round"/>
+    <path d="M33.8 28.2L36.2 25.8" stroke="#072239" stroke-width="2" stroke-linecap="round"/>
+    <path d="M33.8 25.8L36.2 28.2" stroke="#072239" stroke-width="2" stroke-linecap="round"/>
+    <path d="M42.4 27H44.6" stroke="#072239" stroke-width="2" stroke-linecap="round"/>
+    <path d="M42.4 29H44.6" stroke="#072239" stroke-width="2" stroke-linecap="round"/>
   </g>
-  <text x="70" y="43" fill="#F2F7FB" font-family="Geist, Inter, Arial, sans-serif" font-size="30" font-weight="700" letter-spacing="-0.45">Cebula</text>
+  <text x="72" y="45" fill="#F2F7FB" font-family="Geist, Inter, Arial, sans-serif" font-size="30" font-weight="700" letter-spacing="-0.35">Cebula</text>
 </svg>

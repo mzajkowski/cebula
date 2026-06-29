@@ -1,18 +1,18 @@
 /* landing.css — Cebula landing page. Refined dark (Linear/Vercel feel). */
 
 :root {
-  --bg-base: #031326;
-  --bg-surface: #071c33;
-  --bg-surface-hover: #0b2441;
-  --bg-subtle: #0d2642;
-  --border: #18395d;
-  --border-subtle: #122e4e;
+  --bg-base: #f5fbff;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f1f8fd;
+  --bg-subtle: #eaf3fa;
+  --border: #d0e2f1;
+  --border-subtle: #e0edf7;
   --accent: #14BBA6;
   --accent-hover: #2fd7c2;
   --accent-muted: #14bba629;
-  --text-primary: #F2F7FB;
-  --text-secondary: #A8BAD0;
-  --text-tertiary: #6E87A4;
+  --text-primary: #0a2a45;
+  --text-secondary: #446683;
+  --text-tertiary: #6e8ca8;
   --warning: #F59E0B;
   --destructive: #EF4444;
 }
@@ -23,7 +23,7 @@ body {
   margin: 0;
   min-width: 375px;
   background:
-    radial-gradient(1200px 600px at 50% -200px, #0b2f57 0%, transparent 58%),
+    radial-gradient(1200px 600px at 50% -240px, #d8eefd 0%, transparent 60%),
     var(--bg-base);
   color: var(--text-primary);
   font-family: "Geist", system-ui, sans-serif;
@@ -63,7 +63,7 @@ body {
 /* Nav */
 .nav {
   position: sticky; top: 0; z-index: 50; height: 60px;
-  background: rgba(3, 19, 38, 0.82); backdrop-filter: blur(12px);
+  background: rgba(245, 251, 255, 0.9); backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-subtle);
 }
 .nav-inner { max-width: 960px; margin: 0 auto; height: 100%; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
@@ -98,7 +98,7 @@ body {
 
 /* Badges */
 .badge { align-self: flex-start; display: inline-block; font-size: 10px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; }
-.badge-live { background: var(--accent); color: #032238; }
+.badge-live { background: var(--accent); color: #05324f; }
 .badge-soon { background: var(--bg-subtle); color: var(--text-tertiary); }
 
 /* Tags */

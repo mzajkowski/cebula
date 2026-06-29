@@ -1,18 +1,18 @@
 /* styles.css — AI Cost Calculator. Refined dark (Linear/Vercel feel). */
 
 :root {
-  --bg-base: #031326;
-  --bg-surface: #071c33;
-  --bg-surface-hover: #0b2441;
-  --bg-subtle: #0d2642;
-  --border: #18395d;
-  --border-subtle: #122e4e;
+  --bg-base: #f5fbff;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f1f8fd;
+  --bg-subtle: #eaf3fa;
+  --border: #d0e2f1;
+  --border-subtle: #e0edf7;
   --accent: #14BBA6;
   --accent-hover: #2fd7c2;
   --accent-muted: #14bba629;
-  --text-primary: #F2F7FB;
-  --text-secondary: #A8BAD0;
-  --text-tertiary: #6E87A4;
+  --text-primary: #0a2a45;
+  --text-secondary: #446683;
+  --text-tertiary: #6e8ca8;
   --warning: #F59E0B;
   --destructive: #EF4444;
   /* legacy aliases */
@@ -22,7 +22,7 @@
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { background: radial-gradient(1200px 600px at 50% -200px, #0b2f57 0%, transparent 58%), var(--bg-base); color: var(--text-primary); font-family: "Geist", system-ui, sans-serif; font-weight: 400; line-height: 1.6; margin: 0; min-width: 375px; -webkit-font-smoothing: antialiased; }
+body { background: radial-gradient(1200px 600px at 50% -240px, #d8eefd 0%, transparent 60%), var(--bg-base); color: var(--text-primary); font-family: "Geist", system-ui, sans-serif; font-weight: 400; line-height: 1.6; margin: 0; min-width: 375px; -webkit-font-smoothing: antialiased; }
 .accent { color: var(--accent); }
 .text-secondary { color: var(--text-secondary); }
 h1, h2, h3 { font-weight: 600; letter-spacing: -0.02em; }
@@ -51,7 +51,7 @@ h1, h2, h3 { font-weight: 600; letter-spacing: -0.02em; }
 .input { background: var(--bg-subtle); border: 1px solid var(--border); color: var(--text-primary); border-radius: 8px; padding: 10px 14px; font-size: .9rem; font-family: inherit; }
 .input::placeholder { color: var(--text-tertiary); }
 .input:focus { outline: none; border-color: var(--accent); }
-.btn-primary { background: var(--accent); color: #000; font-weight: 500; border: none; border-radius: 8px; padding: 10px 20px; cursor: pointer; font-family: inherit; transition: background 200ms ease; }
+.btn-primary { background: var(--accent); color: #05324f; font-weight: 600; border: none; border-radius: 8px; padding: 10px 20px; cursor: pointer; font-family: inherit; transition: background 200ms ease; }
 .btn-primary:hover { background: var(--accent-hover); }
 .btn-ghost { background: transparent; color: var(--text-primary); border: 1px solid var(--border); border-radius: 8px; padding: 10px 20px; cursor: pointer; font-family: inherit; transition: all 200ms ease; }
 .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
@@ -105,7 +105,7 @@ details summary { cursor: pointer; color: var(--accent); font-size: .9rem; }
 
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: var(--bg-base); }
-::-webkit-scrollbar-thumb { background: #1f4670; border-radius: 5px; }
+::-webkit-scrollbar-thumb { background: #9ebbd5; border-radius: 5px; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 @media (max-width: 480px) {
