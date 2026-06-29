@@ -77,7 +77,7 @@ function step1() {
   <div class="role-head"><span>${t.colInclude}</span><span>${t.colRole}</span><span>${t.colHeadcount}</span><span>${t.colWeight}</span></div>
   <div id="roles">${rows}${custom}</div>
   <button id="add-role" class="btn-ghost text-sm mt-2">${t.addRole}</button>
-  <details class="mt-5"><summary>${t.advancedToggle}</summary><div class="mt-3"><label class="block text-sm mb-2">${t.selfHostedLabel}</label>${t.selfHostedOptions.map(o => `<label class="chk"><input type="checkbox" class="sh" value="${o}" ${s.selfHostedOptions.includes(o) ? "checked" : ""}/> ${o}</label>`).join("")}</div></details>`;
+  <details class="mt-5"><summary>${t.advancedToggle}</summary><div class="mt-3"><label class="block text-sm mb-2">${t.selfHostedLabel}</label>${t.selfHostedOptions.map(o => `<label class="chk"><input type="checkbox" class="sh" value="${o}" ${s.selfHostedOptions.includes(o) ? "checked" : ""}/> ${o}</label>`).join("")}<div class="mt-3"><label class="block text-sm mb-1">${t.selfHostedCostLabel}</label><input id="sh-cost" type="number" min="0" class="input w-full mb-1" value="${s.selfHostedMonthlyCost ?? ""}" placeholder="${t.selfHostedCostPlaceholder}"/><p class="text-secondary text-sm">${t.selfHostedCostHint}</p></div></div></details>`;
 }
 // Builds one role row, default or custom.
 function roleRow(r, i, custom, opts) {
@@ -102,6 +102,7 @@ function wire1() {
   document.getElementById("add-role").addEventListener("click", () => { const s = getState(); s.customRoles.push({ id: "c" + Date.now(), name: "", defaultWeight: "moderate", defaultIncluded: true, defaultHeadcount: 1 }); updateState("customRoles", s.customRoles); renderStep(1); });
   document.querySelectorAll(".rrm").forEach(b => b.addEventListener("click", e => { const i = +e.target.closest(".role-row").dataset.i; const s = getState(); s.customRoles.splice(i, 1); updateState("customRoles", s.customRoles); renderStep(1); }));
   document.querySelectorAll(".sh").forEach(cb => cb.addEventListener("change", () => { const v = [...document.querySelectorAll(".sh:checked")].map(x => x.value); updateState("selfHostedOptions", v); updateState("selfHosted", v.length > 0); }));
+  const shc = document.getElementById("sh-cost"); if (shc) shc.addEventListener("input", e => updateState("selfHostedMonthlyCost", +e.target.value || null));
 }
 
 // ---- Step 2 ----
@@ -120,7 +121,7 @@ function step2() {
   <h3 class="text-sm text-secondary mb-2">${t.toolsHeader}</h3><div class="tool-grid">${cards}${custom}</div>
   <div class="flex gap-2 mt-3"><input id="ct" class="input flex-1" placeholder="${t.addToolPlaceholder}"/><button id="ct-add" class="btn-ghost">${t.addTool}</button></div>
   <label class="chk mt-3"><input type="checkbox" id="realcosts" ${s.realCostsMode ? "checked" : ""}/> ${t.realCostsToggle}</label><p class="text-secondary text-sm">${t.realCostsHint}</p>
-  <h3 class="text-sm text-secondary mt-6 mb-2">${t.adoptionHeader}</h3><div class="adopt-grid">${adopt}</div>
+  <h3 class="text-sm text-secondary mt-6 mb-1">${t.adoptionHeader}</h3><p class="text-secondary text-sm mb-2">${t.adoptionHint}</p><div class="adopt-grid">${adopt}</div>
   <details class="mt-5"><summary>${t.advancedToggle}</summary><div class="mt-3"><label class="chk"><input type="checkbox" id="dapi" ${s.directApiUsage ? "checked" : ""}/> ${t.directApiLabel}</label><div id="tok" class="${s.directApiUsage ? "" : "hidden"} mt-2"><label class="block text-sm mb-1">${t.tokensLabel}</label><input id="tokens" type="number" class="input w-full" value="${s.estimatedTokensPerMonth ?? ""}" placeholder="${t.tokensPlaceholder}"/></div></div></details>`;
 }
 function wire2() {
@@ -142,11 +143,13 @@ function step3() {
   <label class="block text-sm mb-1">${t.projectNameLabel}</label><input id="pname" class="input w-full mb-4" value="${esc(s.projectName)}" placeholder="${t.projectNamePlaceholder}"/>
   <label class="block text-sm mb-1">${t.projectTypeLabel}</label><div class="seg-grid mb-4">${types}</div>
   <label class="block text-sm mb-1">${t.durationLabel}</label><input id="dur" type="number" min="1" max="104" class="input w-full mb-4" value="${s.projectDurationWeeks}"/>
+  <label class="block text-sm mb-1">${t.baseRateLabel}</label><input id="brate" type="number" min="0" class="input w-full mb-1" value="${s.baseWeeklyPerPerson ?? CALC.baseWeeklyPerPerson}"/><p class="text-secondary text-sm mb-4">${t.baseRateHint}</p>
   <label class="block text-sm mb-1">${t.briefLabel}</label><textarea id="brief" class="input w-full mb-4" rows="4" placeholder="${t.briefPlaceholder}">${esc(s.projectBrief)}</textarea>`;
 }
 function wire3() {
   document.getElementById("pname").addEventListener("input", e => updateState("projectName", e.target.value));
   document.getElementById("dur").addEventListener("input", e => updateState("projectDurationWeeks", +e.target.value || 8));
+  document.getElementById("brate").addEventListener("input", e => updateState("baseWeeklyPerPerson", +e.target.value || CALC.baseWeeklyPerPerson));
   document.getElementById("brief").addEventListener("input", e => updateState("projectBrief", e.target.value));
   document.querySelectorAll(".seg").forEach(b => b.addEventListener("click", () => { updateState("projectType", b.dataset.t); document.querySelectorAll(".seg").forEach(x => x.classList.remove("sel")); b.classList.add("sel"); }));
 }

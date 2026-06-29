@@ -7,12 +7,15 @@ Cebula uses two intentionally rough formulas. They are based on observed agency 
 For every included role with at least one person:
 
 ```
-monthlyBurn = Σ ( headcount × avgToolCost × adoptionToolCount[level] × roleWeight[weight] )
+monthlyBurn = Σ ( headcount × avgToolCost × roleWeight[weight] ) + selfHostedMonthlyCost
 ```
 
 - `avgToolCost` = average monthly cost of the selected tools, or `chatgpt` cost (€20) if none selected.
-- `adoptionToolCount[level]` = how many tools, on average, a person actively uses at that adoption level.
-- `roleWeight[weight]` = consumption multiplier for that role's intensity.
+- `roleWeight[weight]` = consumption/seat multiplier for that role's intensity.
+- `selfHostedMonthlyCost` = user-entered GPU + ops estimate for local/self-hosted models (0 if none).
+
+Seat burn is flat-rate, so it is driven by **role weight only**. Team-wide adoption is *not* applied
+here — it would double-count intensity. Adoption drives the project token estimate instead (Formula 2).
 
 ## Formula 2 — Project cost range
 
@@ -39,7 +42,8 @@ mid  = (low + high) / 2
 | codeium | 0 | Free tier | Raise if Pro |
 
 ### adoptionToolCount
-Avg tools used per level: `light 1`, `moderate 1.5`, `heavy 2.5`, `allin 3.5`. Raise if your teams stack more tools.
+Usage-intensity proxy per level: `light 1`, `moderate 1.5`, `heavy 2.5`, `allin 3.5`. Applied to the
+**project** formula only (token-hungriness of the work). Raise if your teams stack more tools.
 
 ### roleWeights
 Consumption multiplier: `light 0.6`, `moderate 1.0`, `heavy 1.5`, `poweruser 2.2`.
@@ -61,12 +65,12 @@ When an OpenRouter key is present, Cebula sends the brief and receives a float b
 
 6-person agency: 2 Frontend Dev (heavy), 1 PM (moderate), 1 Designer (light), 1 BA (moderate), 1 QA (moderate). Heavy adoption (2.5). CMS migration (1.4). 8 weeks.
 
-**Monthly burn** — assume avgToolCost €20:
-- 2 devs heavy: `2 × 20 × 2.5 × 1.5 = 150`
-- 1 PM moderate: `1 × 20 × 2.5 × 1.0 = 50`
-- 1 designer light: `1 × 20 × 2.5 × 0.6 = 30`
-- 1 BA moderate: `50`, 1 QA moderate: `50`
-- **Total ≈ €330/month**
+**Monthly burn** — assume avgToolCost €20, no self-hosted infra:
+- 2 devs heavy: `2 × 20 × 1.5 = 60`
+- 1 PM moderate: `1 × 20 × 1.0 = 20`
+- 1 designer light: `1 × 20 × 0.6 = 12`
+- 1 BA moderate: `20`, 1 QA moderate: `20`
+- **Total ≈ €132/month** (add `selfHostedMonthlyCost` if any)
 
 **Project cost** — headcount 6, base 35, 8 weeks, type 1.4, adoption 2.5, adj 1.0:
 - `base = 6 × 35 × 8 × 1.4 × 2.5 × 1.0 = 5,880`

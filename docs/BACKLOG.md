@@ -20,24 +20,24 @@ The cheapest, highest-trust wins. None require backend or auth.
   _Done when:_ editing the brief visibly moves the project range and populates the
   "From your brief" card. ✅
 
-- [ ] **C — Remove or make-real the self-hosted toggle.**
-  Today the "Advanced: self-hosted models" checkbox affects only an insight string, not the
-  math. Either drop it, or have it add a visible infra-cost line ("+ est. GPU/ops €X/mo, edit me").
-  _Why:_ an input that silently does nothing is a credibility trap the moment a user tests it.
-  _Done when:_ the toggle either disappears or changes a number the user can see and edit.
+- [x] **C — Remove or make-real the self-hosted toggle.**
+  The "Advanced: self-hosted models" section now has an editable "infra cost (GPU + ops) / month"
+  field that flows into the monthly burn and shows as its own line in both the burn breakdown and
+  the formula table. The insight copy reinforces it ("the cost moved, it didn't vanish").
+  _Done:_ the toggle changes a number the user can see and edit. ✅
 
-- [ ] **C — Reframe the project number as a range with an honest basis.**
-  Surface the load-bearing constant (`baseWeeklyPerPerson = 35`) in the UI with a one-line
-  "why this number" and let the user edit it. Widen/soften language: "first-draft estimate",
-  not "real numbers".
-  _Why:_ the project figure is currently precise-looking but indefensible.
-  _Done when:_ the assumption is visible, editable, and the copy no longer over-claims precision.
+- [x] **C — Reframe the project number as a range with an honest basis.**
+  The load-bearing constant (`baseWeeklyPerPerson = 35`) is now a visible, editable field in step 3
+  with a one-line "why this number" hint, persisted in state and driving the calculation + formula
+  breakdown. Over-claiming copy ("real numbers — not vibes") removed in the language pass.
+  _Done:_ the assumption is visible, editable, explained, and the copy no longer over-claims precision. ✅
 
-- [ ] **I — Resolve overlapping intensity knobs.**
-  `adoptionLevel` (1→3.5×) and per-role `roleWeight` (0.6→2.2×) both multiply the same cost and
-  compound. Pick one as primary; demote or merge the other.
-  _Why:_ two knobs for the same thing make the estimate swing wildly and feel arbitrary.
-  _Done when:_ a user sets intensity once and understands what it does.
+- [x] **I — Resolve overlapping intensity knobs.**
+  `adoptionLevel` and `roleWeight` used to both multiply the seat burn and compound (and the burn
+  formula table hid the adoption factor, so the shown math didn't add up). Now **role weight drives
+  the monthly seat burn** (per-role, makes the breakdown meaningful and self-consistent) and
+  **adoption drives the project token estimate** only. A hint in step 2 explains the split.
+  _Done:_ each knob drives one number; the burn breakdown now multiplies out correctly. ✅
 
 ---
 
@@ -120,9 +120,13 @@ Do **not** ship paid tiers until Phase 1–2 land.
   _Why:_ you can't charge for a feature the user must also pay a third party to run.
   _Done when:_ a single honest plan maps to a feature set the user can't trivially self-serve.
 
-- [ ] **I — Unify branding & promise.**
+- [~] **I — Unify branding & promise.**
   Landing tagline, calculator tagline, and product name currently tell three stories. Pick one.
   _Why:_ brand incoherence read as "pre-product" to every reviewer.
+  _Progress:_ language pass done — adopted "estimate / clear picture / not guesswork" as the honest
+  voice and removed the precision over-claim ("real numbers — not vibes") from the landing page.
+  "Peel back what AI is really costing you." is the single tagline. The word "real" is now reserved
+  for real-cost override mode (actual invoices). _Remaining:_ align page titles + any future tools.
 
 - [ ] **N — Trim the landing "coming soon" shelf.**
   Two of three tool cards are empty; collapse to one "more coming" line until they exist.

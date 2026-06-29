@@ -23,12 +23,13 @@ function includedRoles(state) {
 }
 
 // Multiplier-model burn over a given set of tools (subset of selectedTools).
+// Seat burn is driven by per-role weight only; team-wide adoption drives the
+// project token estimate instead, so the two knobs no longer compound here.
 function multiplierBurn(state, toolIds) {
   const cost = avgToolCost(state, toolIds);
-  const tools = CALC.adoptionToolCount[state.adoptionLevel] ?? 1;
   return includedRoles(state).reduce((sum, r) => {
     const w = CALC.roleWeights[r.defaultWeight] ?? 1;
-    return sum + r.defaultHeadcount * cost * tools * w;
+    return sum + r.defaultHeadcount * cost * w;
   }, 0);
 }
 
@@ -40,13 +41,14 @@ function overridesTotal(state) {
 
 // Computes estimated monthly team AI subscription burn.
 export function calculateMonthlyBurn(state) {
+  const infra = state.selfHosted ? (Number(state.selfHostedMonthlyCost) || 0) : 0;
   const overrideIds = Object.keys(state.toolOverrides || {});
   if (state.realCostsMode && overrideIds.length) {
     const allTools = [...state.selectedTools, ...state.customTools.map(t => t.id)];
     const remaining = allTools.filter(id => !overrideIds.includes(id));
-    return overridesTotal(state) + (remaining.length ? multiplierBurn(state, remaining) : 0);
+    return overridesTotal(state) + (remaining.length ? multiplierBurn(state, remaining) : 0) + infra;
   }
-  return multiplierBurn(state);
+  return multiplierBurn(state) + infra;
 }
 
 // Returns total headcount across all included roles.
@@ -89,7 +91,7 @@ export function calculateProjectCost(state) {
   // Clamp to valid range — model responses can return values outside spec
   const adj = Math.min(2.5, Math.max(0.5, state.projectAnalysis?.adjustment_multiplier ?? 1.0));
   const base = totalHeadcount(state)
-    * CALC.baseWeeklyPerPerson
+    * (state.baseWeeklyPerPerson ?? CALC.baseWeeklyPerPerson)
     * (state.projectDurationWeeks ?? CALC.defaultDurationWeeks)
     * CALC.projectTypeMultiplier[state.projectType ?? "other"]
     * CALC.adoptionToolCount[state.adoptionLevel]

@@ -14,9 +14,9 @@ function avgToolCost(state) {
   return state.selectedTools.reduce((s, id) => s + (CALC.toolCosts[id] ?? 0), 0) / state.selectedTools.length;
 }
 
-// Estimates monthly cost for one role.
+// Estimates monthly cost for one role. Seat burn = headcount × avg tool cost × role weight.
 function roleMonthly(state, r) {
-  return r.defaultHeadcount * avgToolCost(state) * CALC.adoptionToolCount[state.adoptionLevel] * (CALC.roleWeights[r.defaultWeight] ?? 1);
+  return r.defaultHeadcount * avgToolCost(state) * (CALC.roleWeights[r.defaultWeight] ?? 1);
 }
 
 // Renders the full output view for Step 4.
@@ -26,6 +26,9 @@ export function renderOutput(state, estimate) {
   const totalPeople = roles.reduce((s, r) => s + r.defaultHeadcount, 0);
   const maxRole = Math.max(1, ...roles.map(r => roleMonthly(state, r)));
   const o = STRINGS.output;
+  const infra = state.selfHosted ? (Number(state.selfHostedMonthlyCost) || 0) : 0;
+  const infraBreakdownRow = infra > 0 ? `<tr><td class="py-1">${o.selfHostedRow}</td><td class="text-right">—</td><td class="text-right">—</td><td class="text-right">${formatCurrency(infra)}</td></tr>` : "";
+  const infraFormulaRow = infra > 0 ? `<tr><td class="py-1">${o.selfHostedRow}</td><td class="text-right">—</td><td class="text-right">—</td><td class="text-right">—</td><td class="text-right">${formatCurrency(infra)}</td></tr>` : "";
 
   const breakdownRows = roles.map(r =>
     `<tr><td class="py-1">${r.name}</td><td class="text-right">${r.defaultHeadcount}</td><td class="text-right">${STRINGS.step1.weights[r.defaultWeight] || r.defaultWeight}</td><td class="text-right">${formatCurrency(roleMonthly(state, r))}</td></tr>`).join("");
@@ -50,11 +53,11 @@ export function renderOutput(state, estimate) {
 
   const formulaBurnRows = roles.map(r =>
     `<tr><td class="py-1">${r.name}</td><td class="text-right">${r.defaultHeadcount}</td><td class="text-right">${formatCurrency(avgToolCost(state))}</td><td class="text-right">${CALC.roleWeights[r.defaultWeight] ?? 1}×</td><td class="text-right">${formatCurrency(roleMonthly(state, r))}</td></tr>`).join("");
-  const formulaBurn = `<table class="w-full text-sm"><thead><tr class="text-secondary"><th class="text-left">${o.fRole}</th><th class="text-right">${o.fPeople}</th><th class="text-right">${o.fBasis}</th><th class="text-right">${o.fWeight}</th><th class="text-right">${o.fMonthly}</th></tr></thead><tbody>${formulaBurnRows}<tr class="font-semibold"><td class="py-1">${o.fTotal}</td><td></td><td></td><td></td><td class="text-right">${formatCurrency(estimate.monthlyBurn)}</td></tr></tbody></table>`;
+  const formulaBurn = `<table class="w-full text-sm"><thead><tr class="text-secondary"><th class="text-left">${o.fRole}</th><th class="text-right">${o.fPeople}</th><th class="text-right">${o.fBasis}</th><th class="text-right">${o.fWeight}</th><th class="text-right">${o.fMonthly}</th></tr></thead><tbody>${formulaBurnRows}${infraFormulaRow}<tr class="font-semibold"><td class="py-1">${o.fTotal}</td><td></td><td></td><td></td><td class="text-right">${formatCurrency(estimate.monthlyBurn)}</td></tr></tbody></table>`;
   const formulaProject = `<table class="w-full text-sm"><thead><tr class="text-secondary"><th class="text-left">${o.fInput}</th><th class="text-right">${o.fValue}</th></tr></thead><tbody>
     <tr><td>${o.fTeamSize}</td><td class="text-right">${totalPeople} people</td></tr>
     <tr><td>${o.fDuration}</td><td class="text-right">${state.projectDurationWeeks ?? CALC.defaultDurationWeeks} weeks</td></tr>
-    <tr><td>${o.fBaseRate}</td><td class="text-right">€${CALC.baseWeeklyPerPerson}/person/week</td></tr>
+    <tr><td>${o.fBaseRate}</td><td class="text-right">€${state.baseWeeklyPerPerson ?? CALC.baseWeeklyPerPerson}/person/week</td></tr>
     <tr><td>${o.fTypeMult}</td><td class="text-right">${typeMult}× (${typeLabel})</td></tr>
     <tr><td>${o.fAdoptMult}</td><td class="text-right">${adoptMult}× (${STRINGS.step2.adoption[state.adoptionLevel]?.name || state.adoptionLevel})</td></tr>
     <tr><td>${o.fAiAdjust}</td><td class="text-right">${aiAdj}× (${adjSource})</td></tr>
@@ -72,7 +75,7 @@ export function renderOutput(state, estimate) {
       <button id="toggle-breakdown" class="btn-ghost text-sm">${o.breakdownToggle}</button>
       <div id="breakdown" class="hidden mt-3"><table class="w-full text-sm">
         <thead><tr class="text-secondary"><th class="text-left">${o.colRole}</th><th class="text-right">${o.colHeadcount}</th><th class="text-right">${o.colWeight}</th><th class="text-right">${o.colMonthly}</th></tr></thead>
-        <tbody>${breakdownRows}</tbody></table></div>
+        <tbody>${breakdownRows}${infraBreakdownRow}</tbody></table></div>
     </div>
     <div class="card mb-4">
       <p class="text-secondary text-sm">${o.projectTitle}</p>
