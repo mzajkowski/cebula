@@ -45,11 +45,12 @@ The cheapest, highest-trust wins. None require backend or auth.
 
 Turn a one-shot screen into something users save and share.
 
-- [ ] **C — Real export (PDF + CSV).**
-  Replace the email-gated "Get the full breakdown as a PDF" (which generates no PDF) with an
-  actual client-ready one-pager and a CSV of the breakdown. Keep email optional, not a paywall.
-  _Why:_ "send to client / show finance" is impossible today; this is the core artifact.
-  _Done when:_ a user can download a branded summary without giving an email.
+- [x] **C — Real export (PDF + CSV).**
+  Added an "Export & share" card with **Download CSV** (UTF-8 BOM, finance-friendly: summary,
+  role breakdown incl. self-hosted infra, project range, and all assumptions) and **Save as PDF**
+  (expands the breakdown + formula, then a print stylesheet strips the chrome to a clean one-pager).
+  Both work with **no email**. The old email gate was reframed into an honest optional opt-in.
+  _Done:_ a user can download a branded summary without giving an email. ✅
 
 - [ ] **I — Promote real-cost ("override") mode to the primary path.**
   The seats × actual-price override is the only non-invented number in the product. Make it

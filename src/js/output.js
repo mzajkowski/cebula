@@ -88,6 +88,11 @@ export function renderOutput(state, estimate) {
     ${risk}
     <div class="card insight mb-4"><p class="text-sm text-secondary mb-1">${o.insightLabel}</p><p>${selectInsight(state)}</p></div>
     <div class="card pro mb-4"><h3 class="font-semibold accent">${o.proTitle}</h3><p class="text-secondary text-sm my-2">${o.proBody}</p><button id="waitlist" class="btn-ghost text-sm">${o.proCta}</button></div>
+    <div class="card mb-4" id="export-card">
+      <h3 class="font-semibold mb-2">${o.exportTitle}</h3>
+      <p class="text-secondary text-sm mb-3">${o.exportSubtitle}</p>
+      <div class="flex gap-2"><button id="dl-csv" class="btn-primary">${o.exportCsv}</button><button id="dl-pdf" class="btn-ghost">${o.exportPdf}</button></div>
+    </div>
     <div class="card" id="email-card">
       <h3 class="font-semibold mb-2">${o.emailTitle}</h3>
       <form id="lead-form" name="${CONFIG.netlifyFormName}" data-netlify="true">
@@ -103,7 +108,48 @@ export function renderOutput(state, estimate) {
       </form>
     </div>
     ${formula}
-    <div class="restart-wrap"><button id="restart" class="btn-ghost">${STRINGS.nav.restart}</button><p class="text-secondary text-xs mt-2">Your estimate is not saved — copy it before restarting</p></div>`;
+    <div class="restart-wrap"><button id="restart" class="btn-ghost">${STRINGS.nav.restart}</button><p class="text-secondary text-xs mt-2">Your estimate is not saved — export it before restarting</p></div>`;
+
+  const csvEscape = (v) => { const s = String(v ?? ""); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const buildCSV = () => {
+    const rows = [
+      ["Cebula AI Cost Estimate"],
+      ["Team", state.teamName || "—"],
+      ["Project", state.projectName || "—"],
+      ["Project type", typeLabel],
+      ["Duration (weeks)", state.projectDurationWeeks ?? CALC.defaultDurationWeeks],
+      ["People", totalPeople],
+      [],
+      ["Monthly team AI cost (EUR)", Math.round(estimate.monthlyBurn)],
+      [],
+      ["Role breakdown"],
+      ["Role", "People", "Usage", "Monthly (EUR)"],
+      ...roles.map(r => [r.name, r.defaultHeadcount, STRINGS.step1.weights[r.defaultWeight] || r.defaultWeight, Math.round(roleMonthly(state, r))]),
+    ];
+    if (infra > 0) rows.push([o.selfHostedRow, "—", "—", Math.round(infra)]);
+    rows.push([], ["Project AI cost (EUR)"], ["Low", "Mid", "High"], [Math.round(estimate.project.low), Math.round(estimate.project.mid), Math.round(estimate.project.high)]);
+    rows.push([], ["Assumptions"],
+      ["Base rate (EUR/person/week)", state.baseWeeklyPerPerson ?? CALC.baseWeeklyPerPerson],
+      ["Adoption", STRINGS.step2.adoption[state.adoptionLevel]?.name || state.adoptionLevel],
+      ["Project type multiplier", typeMult],
+      ["Adoption multiplier", adoptMult],
+      ["AI adjustment", aiAdj + " (" + adjSource + ")"]);
+    return rows.map(r => r.map(csvEscape).join(",")).join("\n");
+  };
+  const slug = (state.projectName || "cebula-estimate").replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase() || "cebula-estimate";
+  document.getElementById("dl-csv").addEventListener("click", () => {
+    const blob = new Blob(["\ufeff" + buildCSV()], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = slug + "-ai-cost.csv";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+  document.getElementById("dl-pdf").addEventListener("click", () => {
+    document.getElementById("breakdown")?.classList.remove("hidden");
+    document.getElementById("formula")?.classList.remove("hidden");
+    window.print();
+  });
 
   document.getElementById("toggle-breakdown").addEventListener("click", (e) => {
     const b = document.getElementById("breakdown");

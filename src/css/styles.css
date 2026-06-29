@@ -112,4 +112,10 @@ details summary { cursor: pointer; color: var(--accent); font-size: .9rem; }
   .nav-row .btn-primary { flex: 1; }
 }
 
-@media print { .header, .progress, .step-indicator, #banner, .nav-row, .btn-primary, .btn-ghost, #lead-form { display: none !important; } .card { break-inside: avoid; } }
+@media print {
+  body { background: #fff !important; }
+  .header, .progress, .step-indicator, #banner, .nav-row, .pro, #export-card, #email-card, .restart-wrap, button { display: none !important; }
+  .wrap { max-width: 100%; padding: 0; }
+  .card { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+  #breakdown, #formula { display: block !important; }
+}
