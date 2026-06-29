@@ -1,6 +1,11 @@
 [build]
   publish = "src/"
 
+[[redirects]]
+  from = "/calculator/*"
+  to = "/ai-cost-calculator/:splat"
+  status = 301
+
 [[headers]]
   for = "/*"
   [headers.values]

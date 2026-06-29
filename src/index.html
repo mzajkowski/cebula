@@ -3,44 +3,200 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cebula — AI Cost Calculator</title>
-  <meta name="description" content="Peel back what AI is really costing your team and projects." />
-  <meta property="og:title" content="Cebula — AI Cost Calculator" />
-  <meta property="og:description" content="Peel back what AI is really costing your team and projects." />
-  <meta name="theme-color" content="#0a0a0a" />
+  <title>Cebula — Practical tools for modern teams</title>
+  <meta name="description" content="Practical, no-nonsense tools for agencies and tech teams who want real numbers — not vibes." />
+  <meta property="og:title" content="Cebula — Practical tools for modern teams" />
+  <meta property="og:description" content="Practical, no-nonsense tools for agencies and tech teams who want real numbers — not vibes." />
+  <meta name="theme-color" content="#080808" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/landing.css" />
 </head>
 <body>
   <!-- Hidden form for Netlify build-time detection -->
-  <form name="cebula-leads" netlify hidden>
+  <form name="cebula-waitlist" netlify hidden>
     <input name="email" />
-    <input name="team_name" />
-    <input name="project_name" />
-    <input name="estimate_low" />
-    <input name="estimate_high" />
-    <input name="adoption_level" />
+    <input name="tool" />
   </form>
 
-  <header class="header">
-    <span class="logo">🧅 Cebula</span>
-    <span class="tagline">Peel back what AI is really costing you.</span>
-  </header>
-  <div class="progress"><div id="progress-fill" class="progress-fill"></div></div>
-  <p id="step-indicator" class="step-indicator"></p>
-  <main class="wrap"><section id="wizard-content"></section></main>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="nav-logo" href="/">
+        <img class="logo-img" src="assets/logo.svg" alt="Cebula" width="22" height="22"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" />
+        <span class="logo-fallback">🧅 Cebula</span>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a class="nav-link" href="#tools" data-i18n="navTools">Tools</a>
+        <a class="nav-link" href="#about" data-i18n="navAbout">About</a>
+        <a class="btn-primary" href="/ai-cost-calculator/" data-i18n="navCta">Try the calculator →</a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
 
-  <script>pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";</script>
-  <script type="module">
-    import { renderStep, updateProgress } from "./js/wizard.js";
-    import { getState } from "./js/state.js";
-    const n = getState().currentStep || 1;
-    updateProgress(n);
-    renderStep(n);
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <p class="eyebrow" data-i18n="heroEyebrow">TOOLS FOR MODERN TEAMS</p>
+      <h1 class="display" data-i18n="heroTitle">Stop guessing what AI is costing you.</h1>
+      <p class="hero-sub" data-i18n="heroSub">Practical, no-nonsense tools for agencies and tech teams who want real numbers — not vibes.</p>
+      <div class="hero-ctas">
+        <a class="btn-primary" href="/ai-cost-calculator/" data-i18n="heroCtaPrimary">Try the AI Cost Calculator →</a>
+        <a class="btn-ghost" href="#tools" data-i18n="heroCtaGhost">See all tools ↓</a>
+      </div>
+      <div class="hero-rule"></div>
+    </section>
+
+    <!-- Tools -->
+    <section id="tools" class="section">
+      <header class="section-head">
+        <p class="eyebrow" data-i18n="toolsEyebrow">THE TOOLS</p>
+        <h2 class="heading" data-i18n="toolsTitle">Practical. Opinionated. Open source.</h2>
+        <p class="section-sub" data-i18n="toolsSub">Each tool solves one problem well. No accounts required.</p>
+      </header>
+
+      <div class="tools-grid">
+        <!-- Card 1 -->
+        <article class="card tool">
+          <span class="badge badge-live" data-i18n="card1Status">LIVE</span>
+          <div class="tool-icon">🧅</div>
+          <h3 class="tool-name" data-i18n="card1Name">AI Cost Calculator</h3>
+          <p class="tool-desc" data-i18n="card1Desc">Estimate what AI tools are really costing your team and projects. Team profile, tool selection, project type — formula-based, transparent, no account needed.</p>
+          <div class="tags">
+            <span class="tag">Free</span><span class="tag">Open source</span><span class="tag">No signup</span>
+          </div>
+          <a class="btn-primary" href="/ai-cost-calculator/" data-i18n="card1Cta">Open tool →</a>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="card tool">
+          <span class="badge badge-soon" data-i18n="card2Status">COMING SOON</span>
+          <div class="tool-icon">⚗️</div>
+          <h3 class="tool-name" data-i18n="card2Name">Scope Validator</h3>
+          <p class="tool-desc" data-i18n="card2Desc">Stress-test a project proposal before you sign. Upload an RFP or paste a brief — get a structured view of what's missing, what's inflated, and what to push back on.</p>
+          <div class="tags"><span class="tag">In development</span></div>
+          <button class="btn-ghost" data-waitlist="scope-validator">Join waitlist</button>
+          <form class="waitlist" name="cebula-waitlist" method="POST" data-netlify="true" hidden>
+            <input type="hidden" name="form-name" value="cebula-waitlist" />
+            <input type="hidden" name="tool" value="scope-validator" />
+            <input type="email" name="email" placeholder="you@company.com" required />
+            <button class="btn-primary" type="submit">Notify me</button>
+          </form>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="card tool">
+          <span class="badge badge-soon" data-i18n="card3Status">COMING SOON</span>
+          <div class="tool-icon">📊</div>
+          <h3 class="tool-name" data-i18n="card3Name">Team AI Audit</h3>
+          <p class="tool-desc" data-i18n="card3Desc">A structured questionnaire that maps your team's actual AI usage, surfaces gaps, and produces a one-page adoption snapshot you can share with stakeholders.</p>
+          <div class="tags"><span class="tag">In development</span></div>
+          <button class="btn-ghost" data-waitlist="team-ai-audit">Join waitlist</button>
+          <form class="waitlist" name="cebula-waitlist" method="POST" data-netlify="true" hidden>
+            <input type="hidden" name="form-name" value="cebula-waitlist" />
+            <input type="hidden" name="tool" value="team-ai-audit" />
+            <input type="email" name="email" placeholder="you@company.com" required />
+            <button class="btn-primary" type="submit">Notify me</button>
+          </form>
+        </article>
+      </div>
+    </section>
+
+    <!-- Founder -->
+    <section id="about" class="section section-about">
+      <div class="about-grid">
+        <div class="about-left">
+          <p class="eyebrow" data-i18n="aboutEyebrow">BUILT BY</p>
+          <h2 class="heading" data-i18n="aboutName">Marcin Zajkowski</h2>
+          <p class="section-sub" data-i18n="aboutBio">10+ years in digital agencies. Former software house founder. SA, BA, lead dev. I built these tools because I kept running into the same problems — invisible AI costs, untrusted estimates, scopes that never held. Cebula is what I wished existed.</p>
+          <div class="about-links">
+            <a class="link-card" href="https://rationalizehq.com" target="_blank" rel="noopener noreferrer">Rationalize HQ →</a>
+            <a class="link-card" href="https://www.linkedin.com/in/marcinzajkowski/" target="_blank" rel="noopener noreferrer">LinkedIn →</a>
+          </div>
+        </div>
+        <div class="about-right">
+          <div class="card">
+            <p class="eyebrow" data-i18n="aboutAlsoEyebrow">ALSO FROM MARCIN</p>
+            <h3 class="tool-name" data-i18n="aboutAlsoName">Rationalize</h3>
+            <p class="tool-desc" data-i18n="aboutAlsoDesc">Rationalization intelligence before you modernize. Independent, vendor-neutral complexity assessment for enterprise transformation programs.</p>
+            <a class="link-card" href="https://rationalizehq.com" target="_blank" rel="noopener noreferrer">rationalizehq.com →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-brand">🧅 Cebula · © 2025 Marcin Zajkowski</span>
+      <div class="footer-links">
+        <a href="#" target="_blank" rel="noopener noreferrer">Open source</a>
+        <a href="#tools">Tools</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const LANDING_STRINGS = {
+      navTools: "Tools",
+      navAbout: "About",
+      navCta: "Try the calculator →",
+      heroEyebrow: "TOOLS FOR MODERN TEAMS",
+      heroTitle: "Stop guessing what AI is costing you.",
+      heroSub: "Practical, no-nonsense tools for agencies and tech teams who want real numbers — not vibes.",
+      heroCtaPrimary: "Try the AI Cost Calculator →",
+      heroCtaGhost: "See all tools ↓",
+      toolsEyebrow: "THE TOOLS",
+      toolsTitle: "Practical. Opinionated. Open source.",
+      toolsSub: "Each tool solves one problem well. No accounts required.",
+      card1Status: "LIVE",
+      card1Name: "AI Cost Calculator",
+      card1Desc: "Estimate what AI tools are really costing your team and projects. Team profile, tool selection, project type — formula-based, transparent, no account needed.",
+      card1Cta: "Open tool →",
+      card2Status: "COMING SOON",
+      card2Name: "Scope Validator",
+      card2Desc: "Stress-test a project proposal before you sign. Upload an RFP or paste a brief — get a structured view of what's missing, what's inflated, and what to push back on.",
+      card3Status: "COMING SOON",
+      card3Name: "Team AI Audit",
+      card3Desc: "A structured questionnaire that maps your team's actual AI usage, surfaces gaps, and produces a one-page adoption snapshot you can share with stakeholders.",
+      aboutEyebrow: "BUILT BY",
+      aboutName: "Marcin Zajkowski",
+      aboutBio: "10+ years in digital agencies. Former software house founder. SA, BA, lead dev. I built these tools because I kept running into the same problems — invisible AI costs, untrusted estimates, scopes that never held. Cebula is what I wished existed.",
+      aboutAlsoEyebrow: "ALSO FROM MARCIN",
+      aboutAlsoName: "Rationalize",
+      aboutAlsoDesc: "Rationalization intelligence before you modernize. Independent, vendor-neutral complexity assessment for enterprise transformation programs."
+    };
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const k = el.getAttribute("data-i18n");
+      if (LANDING_STRINGS[k]) el.textContent = LANDING_STRINGS[k];
+    });
+
+    // Mobile nav toggle
+    const toggle = document.getElementById("nav-toggle");
+    const links = document.getElementById("nav-links");
+    toggle.addEventListener("click", () => {
+      const open = links.classList.toggle("open");
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    links.querySelectorAll("a").forEach(a => a.addEventListener("click", () => {
+      links.classList.remove("open");
+      toggle.setAttribute("aria-expanded", "false");
+    }));
+
+    // Waitlist toggles
+    document.querySelectorAll("[data-waitlist]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const form = btn.nextElementSibling;
+        form.hidden = !form.hidden;
+        if (!form.hidden) form.querySelector("input[type=email]").focus();
+      });
+    });
   </script>
 </body>
 </html>
