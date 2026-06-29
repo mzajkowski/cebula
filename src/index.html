@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cebula — AI Cost Calculator</title>
+  <meta name="description" content="Peel back what AI is really costing your team and projects." />
+  <meta property="og:title" content="Cebula — AI Cost Calculator" />
+  <meta property="og:description" content="Peel back what AI is really costing your team and projects." />
+  <meta property="og:image" content="assets/og.png" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Hidden form for Netlify build-time detection -->
+  <form name="cebula-leads" netlify hidden>
+    <input name="email" />
+    <input name="team_name" />
+    <input name="project_name" />
+    <input name="estimate_low" />
+    <input name="estimate_high" />
+    <input name="adoption_level" />
+  </form>
+
+  <header class="header">
+    <span class="logo">🧅 Cebula</span>
+    <span class="tagline">Peel back what AI is really costing you.</span>
+  </header>
+  <div class="progress"><div id="progress-fill" class="progress-fill"></div></div>
+  <p id="step-indicator" class="step-indicator"></p>
+  <div id="banner"></div>
+  <main class="wrap"><section id="wizard-content"></section></main>
+
+  <script>pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";</script>
+  <script type="module">
+    import { renderStep, updateProgress, renderBanner } from "./js/wizard.js";
+    import { getState } from "./js/state.js";
+    renderBanner();
+    const n = getState().currentStep || 1;
+    updateProgress(n);
+    renderStep(n);
+  </script>
+</body>
+</html>
