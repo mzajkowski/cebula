@@ -1,18 +1,18 @@
 /* landing.css — Cebula landing page. Refined dark (Linear/Vercel feel). */
 
 :root {
-  --bg-base: #080808;
-  --bg-surface: #111111;
-  --bg-surface-hover: #161616;
-  --bg-subtle: #1a1a1a;
-  --border: #222222;
-  --border-subtle: #1a1a1a;
-  --accent: #7AB648;
-  --accent-hover: #8fd155;
-  --accent-muted: #7ab64820;
-  --text-primary: #EDEDEC;
-  --text-secondary: #888888;
-  --text-tertiary: #555555;
+  --bg-base: #031326;
+  --bg-surface: #071c33;
+  --bg-surface-hover: #0b2441;
+  --bg-subtle: #0d2642;
+  --border: #18395d;
+  --border-subtle: #122e4e;
+  --accent: #14BBA6;
+  --accent-hover: #2fd7c2;
+  --accent-muted: #14bba629;
+  --text-primary: #F2F7FB;
+  --text-secondary: #A8BAD0;
+  --text-tertiary: #6E87A4;
   --warning: #F59E0B;
   --destructive: #EF4444;
 }
@@ -22,7 +22,9 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   min-width: 375px;
-  background: var(--bg-base);
+  background:
+    radial-gradient(1200px 600px at 50% -200px, #0b2f57 0%, transparent 58%),
+    var(--bg-base);
   color: var(--text-primary);
   font-family: "Geist", system-ui, sans-serif;
   font-weight: 400;
@@ -61,12 +63,12 @@ body {
 /* Nav */
 .nav {
   position: sticky; top: 0; z-index: 50; height: 60px;
-  background: rgba(8,8,8,0.8); backdrop-filter: blur(12px);
+  background: rgba(3, 19, 38, 0.82); backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-subtle);
 }
 .nav-inner { max-width: 960px; margin: 0 auto; height: 100%; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
 .nav-logo { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--text-primary); text-decoration: none; }
-.logo-img { display: inline-block; }
+.logo-img { display: inline-block; width: auto; height: 32px; }
 .logo-fallback { display: none; }
 .nav-links { display: flex; align-items: center; gap: 24px; }
 .nav-link { color: var(--text-secondary); text-decoration: none; font-size: .95rem; transition: color 200ms ease; }
@@ -96,7 +98,7 @@ body {
 
 /* Badges */
 .badge { align-self: flex-start; display: inline-block; font-size: 10px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; }
-.badge-live { background: var(--accent); color: #000; }
+.badge-live { background: var(--accent); color: #032238; }
 .badge-soon { background: var(--bg-subtle); color: var(--text-tertiary); }
 
 /* Tags */
@@ -134,6 +136,7 @@ body {
   .hero { padding: 80px 24px 64px; }
   .card { padding: 24px; }
   .about-grid { grid-template-columns: 1fr; gap: 32px; }
+    .logo-img { height: 28px; }
   .nav-toggle { display: flex; }
   .nav-links { position: absolute; top: 60px; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; background: var(--bg-base); border-bottom: 1px solid var(--border-subtle); padding: 8px 24px 16px; display: none; }
   .nav-links.open { display: flex; }
