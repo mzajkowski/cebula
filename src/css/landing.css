@@ -93,7 +93,7 @@ body {
 .tools-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
 .tool-icon { font-size: 32px; line-height: 1; }
 .tool-logo { width: 100%; max-width: 260px; height: auto; }
-.tool-logo-soon { filter: grayscale(1); opacity: .5; }
+.tool-logo-soon { filter: saturate(.4) opacity(.5); }
 .tool-icon-live, .tool-icon-ph { width: 52px; height: 52px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; }
 .tool-icon-live { background: var(--accent-muted); }
 .tool-icon-live img { width: 32px; height: 32px; object-fit: contain; }
