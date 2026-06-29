@@ -2,7 +2,7 @@
 
 > Peel back what AI is really costing your team and projects.
 
-![screenshot](docs/screenshot.png)
+<!-- screenshot coming soon -->
 
 ## What it does
 

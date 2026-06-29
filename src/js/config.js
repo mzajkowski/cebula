@@ -45,6 +45,12 @@ export const STRINGS = {
     directApiLabel: "Does your team use AI APIs directly?",
     tokensLabel: "Estimated tokens / month (optional)",
     tokensPlaceholder: "e.g. 5000000",
+    realCostsToggle: "I know our actual tool costs — let me enter them",
+    realCostsHint: "Override the model with real seat counts and prices for sharper numbers.",
+    seatsLabel: "seats",
+    costPerSeatLabel: "€/seat",
+    seatsPlaceholder: "seats",
+    costPerSeatPlaceholder: "€/seat",
   },
   step3: {
     title: "Tell us about the project",
@@ -58,6 +64,7 @@ export const STRINGS = {
       ai_feature: "AI feature",
       integration: "Integration",
       discovery: "Discovery",
+      retainer: "Maintenance / retainer",
       other: "Other",
     },
     durationLabel: "Duration (weeks)",
@@ -66,7 +73,7 @@ export const STRINGS = {
     uploadLabel: "Upload a spec, RFP, or brief (optional)",
     processing: "🧅 Reading your brief...",
     analysed: "✓ Brief analysed — estimates adjusted",
-    noKey: "Add an OpenRouter key to enable AI analysis",
+    noKey: "AI analysis coming soon",
   },
   step4: {
     title: "Your estimate",
@@ -81,15 +88,23 @@ export const STRINGS = {
     colHeadcount: "People",
     colWeight: "Usage",
     colMonthly: "€/month",
-    projectTitle: "Project cost",
+    projectTitle: "AI cost for the project",
     projectFor: "for {name} ({type})",
     projectDuration: "Based on {weeks} weeks with {people} people",
     chartTitle: "Cost by role",
     riskTitle: "From your brief",
     insightLabel: "Cebula says",
-    proTitle: "Want AI-powered analysis?",
-    proBody: "Upload your brief and get adjusted estimates, risk flags from your actual spec, and a detailed PDF breakdown — coming soon.",
-    proCta: "Join the waitlist",
+    proTitle: "Want smarter estimates? We're working on it.",
+    proBody: "Leave your email and we'll let you know when sharper estimates land.",
+    proCta: "Keep me posted",
+    showFormula: "How we calculated this ▾",
+    hideFormula: "How we calculated this ▴",
+    formulaBurnTitle: "Monthly burn breakdown",
+    formulaProjectTitle: "Project cost breakdown",
+    fRole: "Role", fPeople: "People", fBasis: "Tool cost basis", fWeight: "Usage weight", fMonthly: "Monthly est.", fTotal: "Total",
+    fInput: "Input", fValue: "Value",
+    fTeamSize: "Team size", fDuration: "Duration", fBaseRate: "Base rate", fTypeMult: "Project type multiplier", fAdoptMult: "Adoption multiplier", fAiAdjust: "AI adjustment", fRange: "Estimated range",
+    formulaNote: "All base rates and multipliers are in the open source config. Contribute real data at [github link placeholder].",
     emailTitle: "Get the full breakdown as a PDF",
     emailPlaceholder: "you@agency.com",
     emailSubmit: "Send it",
@@ -105,11 +120,26 @@ export const STRINGS = {
     emailFailed: "Couldn't send — try again.",
   },
   banner: {
-    text: "Add an OpenRouter key to unlock AI-powered brief analysis. Stored only in your browser.",
+    text: "Brief analysis is coming soon. Stored only in your browser.",
     placeholder: "sk-or-...",
     save: "Save",
     saved: "✓ Key saved",
     learn: "What is this?",
+  },
+  // Contextual insight templates. {team} and {type} are substituted at render time.
+  insights: {
+    allin_devs: "All-in adoption with a big dev team means subscription burn that nobody sees on a single invoice — it adds up fast.",
+    cms_migration: "CMS migrations hide their cost in content transformation — every page reworked is tokens spent. Budget for the long tail.",
+    ai_feature: "AI features can explode in token usage once real users hit them. Your build cost is the small number here.",
+    poweruser: "Power users concentrate cost. One heavy seat can outspend five light ones — watch where usage clusters.",
+    self_hosted: "Self-hosted models look free until you count GPU time, ops hours, and the engineer babysitting them. The cost moved, it didn't vanish.",
+    under_adoption: "Light adoption on a big team is opportunity cost — competitors moving faster are spending more on purpose.",
+    discovery: "Discovery work drifts. Loose scope plus AI tooling makes estimates wander — revisit this number weekly.",
+    direct_api: "Direct API usage gives you real cost visibility — use it. You can see exactly what each feature costs to run.",
+    fallback: "AI cost rarely shows up as one line — it's scattered across seats, tools, and tokens. This is your starting picture.",
+    allin_ai_feature: "All-in across {team} people building an {type} — token costs compound fastest here. Expect spend to climb as usage scales.",
+    cms_heavy_adoption: "Content transformation plus heavy AI adoption is the most underestimated combination — every reworked page burns tokens twice.",
+    real_costs_higher: "Your actual invoices already sit 30%+ above our formula estimate — the formula was conservative. Trust your real numbers.",
   },
 };
 
@@ -126,7 +156,8 @@ export const CONFIG = {
 export const CALC = {
   // Monthly € per person per tool subscription.
   toolCosts: {
-    claude: 20, chatgpt: 20, copilot: 19, cursor: 20,
+    // GitHub Copilot Individual ~$10, Business ~$19 — using midpoint as agencies typically mix both tiers
+    claude: 20, chatgpt: 20, copilot: 15, cursor: 20,
     gemini: 20, midjourney: 10, perplexity: 20, notionai: 10,
     grammarlyai: 12, codeium: 0, tabnine: 12, whisper: 5,
   },
@@ -137,12 +168,20 @@ export const CALC = {
   // Multiplier applied to project cost by project type.
   projectTypeMultiplier: {
     cms_migration: 1.4, new_build: 1.0, ai_feature: 2.2,
-    integration: 1.1, discovery: 0.6, other: 1.0,
+    integration: 1.1, discovery: 0.6,
+    // Retainer/maintenance — steady state, lower AI intensity than greenfield work
+    retainer: 0.8, other: 1.0,
   },
   // Baseline weekly € of AI spend per person on a project.
   baseWeeklyPerPerson: 35,
   // Low/high spread around the mid estimate.
   rangeMultipliers: { low: 0.8, high: 1.3 },
+  // Default project length in weeks when none supplied.
+  defaultDurationWeeks: 8,
+  // Dev headcount above which a team counts as "many devs" for insights.
+  insightDevThreshold: 3,
+  // Total headcount above which a team counts as "large" for insights.
+  insightTeamThreshold: 5,
   // Default role roster with usage weight, inclusion, and headcount.
   defaultRoles: [
     { id: "frontend", name: "Frontend Dev", defaultWeight: "heavy", defaultIncluded: true, defaultHeadcount: 2 },
@@ -162,7 +201,7 @@ export const CALC = {
   tools: [
     { id: "claude", name: "Claude", defaultCost: 20 },
     { id: "chatgpt", name: "ChatGPT", defaultCost: 20 },
-    { id: "copilot", name: "GitHub Copilot", defaultCost: 19 },
+    { id: "copilot", name: "GitHub Copilot", defaultCost: 15 },
     { id: "cursor", name: "Cursor", defaultCost: 20 },
     { id: "gemini", name: "Gemini", defaultCost: 20 },
     { id: "midjourney", name: "Midjourney", defaultCost: 10 },

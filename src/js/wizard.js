@@ -1,10 +1,9 @@
-// wizard.js — controls step rendering, navigation, validation, and the key banner.
+// wizard.js — controls step rendering, navigation, and validation.
 
 import { STRINGS, CALC } from "./config.js";
 import { getState, updateState, resetState } from "./state.js";
 import { calculateMonthlyBurn, calculateProjectCost } from "./calculator.js";
 import { renderOutput } from "./output.js";
-import { getOpenRouterKey, setOpenRouterKey, extractTextFromFile, parseProjectBrief } from "./api.js";
 
 const TOTAL = 4;
 let validationError = "";
@@ -12,18 +11,6 @@ let validationError = "";
 // Escapes a value for safe HTML attribute insertion.
 function esc(s) { return String(s).replace(/"/g, "&quot;").replace(/</g, "&lt;"); }
 
-// Renders the dismissible OpenRouter key banner if no key and not dismissed.
-export function renderBanner() {
-  const host = document.getElementById("banner");
-  if (getOpenRouterKey() || localStorage.getItem("banner_dismissed")) { host.innerHTML = ""; return; }
-  const b = STRINGS.banner;
-  host.innerHTML = `<div class="banner"><span>${b.text}</span><input id="key-in" class="input banner-in" placeholder="${b.placeholder}" /><button id="key-save" class="btn-primary">${b.save}</button><a href="../docs/OPENROUTER.md" class="accent text-sm">${b.learn}</a><button id="banner-x" aria-label="dismiss">✕</button></div>`;
-  document.getElementById("key-save").addEventListener("click", () => {
-    const v = document.getElementById("key-in").value.trim();
-    if (v) { setOpenRouterKey(v); host.innerHTML = `<div class="banner"><span class="accent">${b.saved}</span></div>`; }
-  });
-  document.getElementById("banner-x").addEventListener("click", () => { localStorage.setItem("banner_dismissed", "1"); host.innerHTML = ""; });
-}
 
 // Updates the progress bar width and step indicator text.
 export function updateProgress(n) {
@@ -120,19 +107,29 @@ function wire1() {
 // ---- Step 2 ----
 function step2() {
   const s = getState(), t = STRINGS.step2;
-  const cards = CALC.tools.map(tl => `<div class="tool-card ${s.selectedTools.includes(tl.id) ? "sel" : ""}" data-id="${tl.id}">${tl.name}<small>€${tl.defaultCost}</small></div>`).join("");
-  const custom = s.customTools.map(tl => `<div class="tool-card sel">${esc(tl.name)}</div>`).join("");
+  const headcount = [...s.roles, ...s.customRoles].filter(r => r.defaultIncluded).reduce((n, r) => n + (r.defaultHeadcount || 0), 0) || 1;
+  const ov = (id, seed) => {
+    if (!s.realCostsMode) return "";
+    const o = s.toolOverrides[id] || { seats: headcount, costPerSeat: seed };
+    return `<div class="override"><label>${t.seatsLabel}<input type="number" min="1" class="input ov-seats" data-id="${id}" value="${o.seats}" placeholder="${t.seatsPlaceholder}"/></label><label>${t.costPerSeatLabel}<input type="number" min="0" class="input ov-cost" data-id="${id}" value="${o.costPerSeat}" placeholder="${t.costPerSeatPlaceholder}"/></label></div>`;
+  };
+  const cards = CALC.tools.map(tl => `<div class="tool-card ${s.selectedTools.includes(tl.id) ? "sel" : ""}" data-id="${tl.id}">${tl.name}<small>€${tl.defaultCost}</small>${s.selectedTools.includes(tl.id) ? ov(tl.id, tl.defaultCost) : ""}</div>`).join("");
+  const custom = s.customTools.map(tl => `<div class="tool-card sel">${esc(tl.name)}${ov(tl.id, CALC.toolCosts.chatgpt)}</div>`).join("");
   const adopt = Object.entries(t.adoption).map(([k, v]) => `<label class="adopt ${s.adoptionLevel === k ? "sel" : ""}"><input type="radio" name="adopt" value="${k}" ${s.adoptionLevel === k ? "checked" : ""}/><strong>${v.name}</strong><span class="text-secondary text-sm">${v.desc}</span></label>`).join("");
   return `<h2 class="text-xl font-semibold mb-1">${t.title}</h2><p class="text-secondary mb-5">${t.subtitle}</p>
   <h3 class="text-sm text-secondary mb-2">${t.toolsHeader}</h3><div class="tool-grid">${cards}${custom}</div>
   <div class="flex gap-2 mt-3"><input id="ct" class="input flex-1" placeholder="${t.addToolPlaceholder}"/><button id="ct-add" class="btn-ghost">${t.addTool}</button></div>
+  <label class="chk mt-3"><input type="checkbox" id="realcosts" ${s.realCostsMode ? "checked" : ""}/> ${t.realCostsToggle}</label><p class="text-secondary text-sm">${t.realCostsHint}</p>
   <h3 class="text-sm text-secondary mt-6 mb-2">${t.adoptionHeader}</h3><div class="adopt-grid">${adopt}</div>
   <details class="mt-5"><summary>${t.advancedToggle}</summary><div class="mt-3"><label class="chk"><input type="checkbox" id="dapi" ${s.directApiUsage ? "checked" : ""}/> ${t.directApiLabel}</label><div id="tok" class="${s.directApiUsage ? "" : "hidden"} mt-2"><label class="block text-sm mb-1">${t.tokensLabel}</label><input id="tokens" type="number" class="input w-full" value="${s.estimatedTokensPerMonth ?? ""}" placeholder="${t.tokensPlaceholder}"/></div></div></details>`;
 }
 function wire2() {
-  document.querySelectorAll(".tool-card[data-id]").forEach(c => c.addEventListener("click", () => { const s = getState(); const id = c.dataset.id; const i = s.selectedTools.indexOf(id); if (i >= 0) s.selectedTools.splice(i, 1); else s.selectedTools.push(id); updateState("selectedTools", s.selectedTools); c.classList.toggle("sel"); }));
+  document.querySelectorAll(".tool-card[data-id]").forEach(c => c.addEventListener("click", e => { if (e.target.closest(".override")) return; const s = getState(); const id = c.dataset.id; const i = s.selectedTools.indexOf(id); if (i >= 0) { s.selectedTools.splice(i, 1); delete s.toolOverrides[id]; } else s.selectedTools.push(id); updateState("selectedTools", s.selectedTools); updateState("toolOverrides", s.toolOverrides); renderStep(2); }));
   document.getElementById("ct-add").addEventListener("click", () => { const v = document.getElementById("ct").value.trim(); if (!v) return; const s = getState(); s.customTools.push({ id: "ct" + Date.now(), name: v }); updateState("customTools", s.customTools); renderStep(2); });
   document.querySelectorAll('input[name=adopt]').forEach(r => r.addEventListener("change", () => { updateState("adoptionLevel", r.value); renderStep(2); }));
+  document.getElementById("realcosts").addEventListener("change", e => { updateState("realCostsMode", e.target.checked); renderStep(2); });
+  const writeOverride = (id) => { const s = getState(); const seats = +(document.querySelector(`.ov-seats[data-id="${id}"]`)?.value) || 0; const cost = +(document.querySelector(`.ov-cost[data-id="${id}"]`)?.value) || 0; s.toolOverrides[id] = { seats, costPerSeat: cost }; updateState("toolOverrides", s.toolOverrides); };
+  document.querySelectorAll(".ov-seats, .ov-cost").forEach(el => el.addEventListener("input", () => writeOverride(el.dataset.id)));
   document.getElementById("dapi").addEventListener("change", e => { updateState("directApiUsage", e.target.checked); document.getElementById("tok").classList.toggle("hidden", !e.target.checked); });
   const tk = document.getElementById("tokens"); if (tk) tk.addEventListener("input", e => updateState("estimatedTokensPerMonth", +e.target.value || null));
 }
@@ -145,19 +142,11 @@ function step3() {
   <label class="block text-sm mb-1">${t.projectNameLabel}</label><input id="pname" class="input w-full mb-4" value="${esc(s.projectName)}" placeholder="${t.projectNamePlaceholder}"/>
   <label class="block text-sm mb-1">${t.projectTypeLabel}</label><div class="seg-grid mb-4">${types}</div>
   <label class="block text-sm mb-1">${t.durationLabel}</label><input id="dur" type="number" min="1" max="104" class="input w-full mb-4" value="${s.projectDurationWeeks}"/>
-  <label class="block text-sm mb-1">${t.briefLabel}</label><textarea id="brief" class="input w-full mb-4" rows="4" placeholder="${t.briefPlaceholder}">${esc(s.projectBrief)}</textarea>
-  <label class="block text-sm mb-1">${t.uploadLabel}</label><input id="file" type="file" accept=".pdf,.docx" class="input w-full"/><p id="fstat" class="text-sm mt-2"></p>`;
+  <label class="block text-sm mb-1">${t.briefLabel}</label><textarea id="brief" class="input w-full mb-4" rows="4" placeholder="${t.briefPlaceholder}">${esc(s.projectBrief)}</textarea>`;
 }
 function wire3() {
   document.getElementById("pname").addEventListener("input", e => updateState("projectName", e.target.value));
   document.getElementById("dur").addEventListener("input", e => updateState("projectDurationWeeks", +e.target.value || 8));
   document.getElementById("brief").addEventListener("input", e => updateState("projectBrief", e.target.value));
   document.querySelectorAll(".seg").forEach(b => b.addEventListener("click", () => { updateState("projectType", b.dataset.t); document.querySelectorAll(".seg").forEach(x => x.classList.remove("sel")); b.classList.add("sel"); }));
-  document.getElementById("file").addEventListener("change", async e => {
-    const f = e.target.files[0]; if (!f) return; const st = document.getElementById("fstat");
-    st.textContent = STRINGS.step3.processing;
-    const text = await extractTextFromFile(f); updateState("uploadedFileText", text);
-    if (!getOpenRouterKey()) { st.innerHTML = `${STRINGS.step3.noKey} — <a class="accent" href="../docs/OPENROUTER.md">docs</a>`; return; }
-    const r = await parseProjectBrief(text || getState().projectBrief); st.innerHTML = r ? `<span class="accent">${STRINGS.step3.analysed}</span>` : STRINGS.step3.noKey;
-  });
 }

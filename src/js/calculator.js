@@ -6,13 +6,14 @@
 // Future: replace localStorage key with server-side auth + credit deduction
 // Pricing model when implemented: €20/5 credits, €100/20, €149/mo unlimited
 
-import { CALC } from "./config.js";
+import { CALC, STRINGS } from "./config.js";
 
-// Returns the average monthly cost across selected tools, or chatgpt fallback.
-function avgToolCost(state) {
-  if (!state.selectedTools || state.selectedTools.length === 0) return CALC.toolCosts.chatgpt;
-  const total = state.selectedTools.reduce((s, id) => s + (CALC.toolCosts[id] ?? 0), 0);
-  return total / state.selectedTools.length;
+// Returns the average monthly cost across a list of tool ids, or chatgpt fallback.
+function avgToolCost(state, ids) {
+  const list = ids ?? state.selectedTools;
+  if (!list || list.length === 0) return CALC.toolCosts.chatgpt;
+  const total = list.reduce((s, id) => s + (CALC.toolCosts[id] ?? 0), 0);
+  return total / list.length;
 }
 
 // Returns every included role with a positive headcount, default and custom.
@@ -21,14 +22,31 @@ function includedRoles(state) {
   return all.filter(r => r.defaultIncluded && (r.defaultHeadcount ?? 0) >= 1);
 }
 
-// Computes estimated monthly team AI subscription burn.
-export function calculateMonthlyBurn(state) {
-  const cost = avgToolCost(state);
+// Multiplier-model burn over a given set of tools (subset of selectedTools).
+function multiplierBurn(state, toolIds) {
+  const cost = avgToolCost(state, toolIds);
   const tools = CALC.adoptionToolCount[state.adoptionLevel] ?? 1;
   return includedRoles(state).reduce((sum, r) => {
     const w = CALC.roleWeights[r.defaultWeight] ?? 1;
     return sum + r.defaultHeadcount * cost * tools * w;
   }, 0);
+}
+
+// Sum of real per-tool overrides (seats × cost/seat).
+function overridesTotal(state) {
+  const o = state.toolOverrides || {};
+  return Object.values(o).reduce((s, v) => s + (Number(v.seats) || 0) * (Number(v.costPerSeat) || 0), 0);
+}
+
+// Computes estimated monthly team AI subscription burn.
+export function calculateMonthlyBurn(state) {
+  const overrideIds = Object.keys(state.toolOverrides || {});
+  if (state.realCostsMode && overrideIds.length) {
+    const allTools = [...state.selectedTools, ...state.customTools.map(t => t.id)];
+    const remaining = allTools.filter(id => !overrideIds.includes(id));
+    return overridesTotal(state) + (remaining.length ? multiplierBurn(state, remaining) : 0);
+  }
+  return multiplierBurn(state);
 }
 
 // Returns total headcount across all included roles.
@@ -38,31 +56,48 @@ function totalHeadcount(state) {
 
 // Computes project AI cost as a low/mid/high range.
 export function calculateProjectCost(state) {
+  // Clamp to valid range — model responses can return values outside spec
+  const adj = Math.min(2.5, Math.max(0.5, state.projectAnalysis?.adjustment_multiplier ?? 1.0));
   const base = totalHeadcount(state)
     * CALC.baseWeeklyPerPerson
-    * (state.projectDurationWeeks ?? 8)
+    * (state.projectDurationWeeks ?? CALC.defaultDurationWeeks)
     * CALC.projectTypeMultiplier[state.projectType ?? "other"]
     * CALC.adoptionToolCount[state.adoptionLevel]
-    * (state.projectAnalysis?.adjustment_multiplier ?? 1.0);
+    * adj;
   const low = base * CALC.rangeMultipliers.low;
   const high = base * CALC.rangeMultipliers.high;
   return { low, mid: (low + high) / 2, high };
 }
 
-// Selects a contextual insight string by dominant state.
+// Selects a contextual insight by evaluating combined signals in priority order.
 export function selectInsight(state) {
+  const ins = STRINGS.insights;
   const devs = state.roles.filter(r => ["frontend", "backend", "fullstack"].includes(r.id) && r.defaultIncluded).reduce((s, r) => s + r.defaultHeadcount, 0);
   const team = totalHeadcount(state);
   const power = [...state.roles, ...state.customRoles].some(r => r.defaultIncluded && r.defaultWeight === "poweruser");
-  if (state.adoptionLevel === "allin" && devs > 3) return "All-in adoption with a big dev team means subscription burn that nobody sees on a single invoice — it adds up fast.";
-  if (state.projectType === "cms_migration") return "CMS migrations hide their cost in content transformation — every page reworked is tokens spent. Budget for the long tail.";
-  if (state.projectType === "ai_feature") return "AI features can explode in token usage once real users hit them. Your build cost is the small number here.";
-  if (power) return "Power users concentrate cost. One heavy seat can outspend five light ones — watch where usage clusters.";
-  if (state.selfHosted) return "Self-hosted models look free until you count GPU time, ops hours, and the engineer babysitting them. The cost moved, it didn't vanish.";
-  if (state.adoptionLevel === "light" && team > 5) return "Light adoption on a big team is opportunity cost — competitors moving faster are spending more on purpose.";
-  if (state.projectType === "discovery") return "Discovery work drifts. Loose scope plus AI tooling makes estimates wander — revisit this number weekly.";
-  if (state.directApiUsage) return "Direct API usage gives you real cost visibility — use it. You can see exactly what each feature costs to run.";
-  return "AI cost rarely shows up as one line — it's scattered across seats, tools, and tokens. This is your starting picture.";
+  const heavyish = ["heavy", "allin"].includes(state.adoptionLevel);
+  const fmt = (s) => s.replace("{team}", team).replace("{type}", STRINGS.step3.projectTypes[state.projectType] || "AI feature");
+  // Priority 1: triple threat — all-in, many devs, AI feature.
+  if (state.adoptionLevel === "allin" && devs > CALC.insightDevThreshold && state.projectType === "ai_feature") return fmt(ins.allin_ai_feature);
+  // Priority 2: CMS migration with heavy/all-in adoption.
+  if (state.projectType === "cms_migration" && heavyish) return ins.cms_heavy_adoption;
+  // Priority 3: real costs already 30%+ above formula estimate.
+  if (state.realCostsMode) {
+    const real = overridesTotal(state);
+    const mult = multiplierBurn(state);
+    if (real > mult * 1.3) return ins.real_costs_higher;
+  }
+  // Priority 4: existing single-signal insights.
+  if (state.adoptionLevel === "allin" && devs > CALC.insightDevThreshold) return ins.allin_devs;
+  if (state.projectType === "cms_migration") return ins.cms_migration;
+  if (state.projectType === "ai_feature") return ins.ai_feature;
+  if (power) return ins.poweruser;
+  if (state.selfHosted) return ins.self_hosted;
+  if (state.adoptionLevel === "light" && team > CALC.insightTeamThreshold) return ins.under_adoption;
+  if (state.projectType === "discovery") return ins.discovery;
+  if (state.directApiUsage) return ins.direct_api;
+  // Priority 5: fallback.
+  return ins.fallback;
 }
 
 // Formats a number as a euro currency string.

@@ -41,6 +41,23 @@ export function renderOutput(state, estimate) {
     ? `<div class="card mt-4"><h3 class="text-sm text-secondary mb-2">${o.riskTitle}</h3>${flags.map(f => `<span class="risk-pill">⚠️ ${f}</span>`).join("")}</div>` : "";
 
   const typeLabel = STRINGS.step3.projectTypes[state.projectType] || state.projectType || "—";
+  const adoptMult = CALC.adoptionToolCount[state.adoptionLevel] ?? 1;
+  const typeMult = CALC.projectTypeMultiplier[state.projectType ?? "other"];
+  const aiAdj = Math.min(2.5, Math.max(0.5, state.projectAnalysis?.adjustment_multiplier ?? 1.0));
+
+  const formulaBurnRows = roles.map(r =>
+    `<tr><td class="py-1">${r.name}</td><td class="text-right">${r.defaultHeadcount}</td><td class="text-right">${formatCurrency(avgToolCost(state))}</td><td class="text-right">${CALC.roleWeights[r.defaultWeight] ?? 1}×</td><td class="text-right">${formatCurrency(roleMonthly(state, r))}</td></tr>`).join("");
+  const formulaBurn = `<table class="w-full text-sm"><thead><tr class="text-secondary"><th class="text-left">${o.fRole}</th><th class="text-right">${o.fPeople}</th><th class="text-right">${o.fBasis}</th><th class="text-right">${o.fWeight}</th><th class="text-right">${o.fMonthly}</th></tr></thead><tbody>${formulaBurnRows}<tr class="font-semibold"><td class="py-1">${o.fTotal}</td><td></td><td></td><td></td><td class="text-right">${formatCurrency(estimate.monthlyBurn)}</td></tr></tbody></table>`;
+  const formulaProject = `<table class="w-full text-sm"><thead><tr class="text-secondary"><th class="text-left">${o.fInput}</th><th class="text-right">${o.fValue}</th></tr></thead><tbody>
+    <tr><td>${o.fTeamSize}</td><td class="text-right">${totalPeople} people</td></tr>
+    <tr><td>${o.fDuration}</td><td class="text-right">${state.projectDurationWeeks ?? CALC.defaultDurationWeeks} weeks</td></tr>
+    <tr><td>${o.fBaseRate}</td><td class="text-right">€${CALC.baseWeeklyPerPerson}/person/week</td></tr>
+    <tr><td>${o.fTypeMult}</td><td class="text-right">${typeMult}× (${typeLabel})</td></tr>
+    <tr><td>${o.fAdoptMult}</td><td class="text-right">${adoptMult}× (${STRINGS.step2.adoption[state.adoptionLevel]?.name || state.adoptionLevel})</td></tr>
+    <tr><td>${o.fAiAdjust}</td><td class="text-right">${aiAdj}× (no brief analysis)</td></tr>
+    <tr class="font-semibold"><td>${o.fRange}</td><td class="text-right">${formatRange(estimate.project.low, estimate.project.high)}</td></tr>
+  </tbody></table>`;
+  const formula = `<div class="card mt-4 mb-4"><button id="toggle-formula" class="btn-ghost text-sm">${o.showFormula}</button><div id="formula" class="hidden mt-3"><h3 class="text-sm text-secondary mb-2">${o.formulaBurnTitle}</h3>${formulaBurn}<h3 class="text-sm text-secondary mt-4 mb-2">${o.formulaProjectTitle}</h3>${formulaProject}<p class="text-secondary text-xs mt-3">${o.formulaNote}</p></div></div>`;
 
   c.innerHTML = `
     <h2 class="text-xl font-semibold mb-1">${STRINGS.step4.title}</h2>
@@ -78,12 +95,19 @@ export function renderOutput(state, estimate) {
         <p class="error hidden mt-2" id="email-error">${STRINGS.errors.emailFailed}</p>
         <p class="text-secondary text-xs mt-2">${o.emailSmallprint}</p>
       </form>
-    </div>`;
+    </div>
+    ${formula}
+    <div class="restart-wrap"><button id="restart" class="btn-ghost">${STRINGS.nav.restart}</button><p class="text-secondary text-xs mt-2">Your estimate is not saved — copy it before restarting</p></div>`;
 
   document.getElementById("toggle-breakdown").addEventListener("click", (e) => {
     const b = document.getElementById("breakdown");
     b.classList.toggle("hidden");
     e.target.textContent = b.classList.contains("hidden") ? o.breakdownToggle : o.breakdownHide;
+  });
+  document.getElementById("toggle-formula").addEventListener("click", (e) => {
+    const f = document.getElementById("formula");
+    f.classList.toggle("hidden");
+    e.target.textContent = f.classList.contains("hidden") ? o.showFormula : o.hideFormula;
   });
   document.getElementById("waitlist").addEventListener("click", () => document.getElementById("email-card").scrollIntoView({ behavior: "smooth" }));
 

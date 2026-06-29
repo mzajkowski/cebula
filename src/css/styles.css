@@ -61,6 +61,11 @@ body { background: var(--bg); color: var(--text); font-family: "Inter", system-u
 .banner-in { flex: 1; min-width: 140px; }
 .banner button#banner-x { background: none; border: none; color: var(--secondary); cursor: pointer; margin-left: auto; }
 
+.override { display: flex; gap: 8px; margin-top: 8px; }
+.override label { display: flex; flex-direction: column; font-size: .7rem; color: var(--secondary); flex: 1; min-width: 0; }
+.override .input { width: 100%; min-width: 0; padding: .35rem .5rem; font-size: .8rem; }
+.restart-wrap { text-align: center; margin-top: 24px; }
+
 .fade-in { animation: fade .35s ease; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 details summary { cursor: pointer; color: var(--accent); font-size: .9rem; }

@@ -17,6 +17,8 @@ function makeDefault() {
     customTools: [],
     adoptionLevel: "moderate",
     directApiUsage: false,
+    realCostsMode: false,
+    toolOverrides: {},
     estimatedTokensPerMonth: null,
     projectName: "",
     projectType: null,

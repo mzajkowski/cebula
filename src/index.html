@@ -7,7 +7,6 @@
   <meta name="description" content="Peel back what AI is really costing your team and projects." />
   <meta property="og:title" content="Cebula — AI Cost Calculator" />
   <meta property="og:description" content="Peel back what AI is really costing your team and projects." />
-  <meta property="og:image" content="assets/og.png" />
   <meta name="theme-color" content="#0a0a0a" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -33,14 +32,12 @@
   </header>
   <div class="progress"><div id="progress-fill" class="progress-fill"></div></div>
   <p id="step-indicator" class="step-indicator"></p>
-  <div id="banner"></div>
   <main class="wrap"><section id="wizard-content"></section></main>
 
   <script>pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";</script>
   <script type="module">
-    import { renderStep, updateProgress, renderBanner } from "./js/wizard.js";
+    import { renderStep, updateProgress } from "./js/wizard.js";
     import { getState } from "./js/state.js";
-    renderBanner();
     const n = getState().currentStep || 1;
     updateProgress(n);
     renderStep(n);
