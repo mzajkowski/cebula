@@ -44,6 +44,9 @@ export function renderOutput(state, estimate) {
   const adoptMult = CALC.adoptionToolCount[state.adoptionLevel] ?? 1;
   const typeMult = CALC.projectTypeMultiplier[state.projectType ?? "other"];
   const aiAdj = Math.min(2.5, Math.max(0.5, state.projectAnalysis?.adjustment_multiplier ?? 1.0));
+  const adjSource = state.projectAnalysis?.source === "local" ? "from your brief"
+    : state.projectAnalysis?.adjustment_multiplier ? "AI brief analysis"
+    : "no brief";
 
   const formulaBurnRows = roles.map(r =>
     `<tr><td class="py-1">${r.name}</td><td class="text-right">${r.defaultHeadcount}</td><td class="text-right">${formatCurrency(avgToolCost(state))}</td><td class="text-right">${CALC.roleWeights[r.defaultWeight] ?? 1}×</td><td class="text-right">${formatCurrency(roleMonthly(state, r))}</td></tr>`).join("");
@@ -54,7 +57,7 @@ export function renderOutput(state, estimate) {
     <tr><td>${o.fBaseRate}</td><td class="text-right">€${CALC.baseWeeklyPerPerson}/person/week</td></tr>
     <tr><td>${o.fTypeMult}</td><td class="text-right">${typeMult}× (${typeLabel})</td></tr>
     <tr><td>${o.fAdoptMult}</td><td class="text-right">${adoptMult}× (${STRINGS.step2.adoption[state.adoptionLevel]?.name || state.adoptionLevel})</td></tr>
-    <tr><td>${o.fAiAdjust}</td><td class="text-right">${aiAdj}× (no brief analysis)</td></tr>
+    <tr><td>${o.fAiAdjust}</td><td class="text-right">${aiAdj}× (${adjSource})</td></tr>
     <tr class="font-semibold"><td>${o.fRange}</td><td class="text-right">${formatRange(estimate.project.low, estimate.project.high)}</td></tr>
   </tbody></table>`;
   const formula = `<div class="card mt-4 mb-4"><button id="toggle-formula" class="btn-ghost text-sm">${o.showFormula}</button><div id="formula" class="hidden mt-3"><h3 class="text-sm text-secondary mb-2">${o.formulaBurnTitle}</h3>${formulaBurn}<h3 class="text-sm text-secondary mt-4 mb-2">${o.formulaProjectTitle}</h3>${formulaProject}<p class="text-secondary text-xs mt-3">${o.formulaNote}</p></div></div>`;

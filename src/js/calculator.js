@@ -54,6 +54,36 @@ function totalHeadcount(state) {
   return includedRoles(state).reduce((s, r) => s + r.defaultHeadcount, 0);
 }
 
+// Keyword-based local brief analysis. Runs entirely client-side, no API key.
+// Returns { adjustment_multiplier, key_risk_flags, source } or null for thin input.
+export function analyzeBriefLocally(text) {
+  const raw = (text || "").trim();
+  if (raw.length < 25) return null;
+  const t = raw.toLowerCase();
+  const has = (words) => words.filter(w => t.includes(w));
+
+  // Signals that push token usage above a baseline medium project.
+  const aiHits = has(["ai ", "llm", "gpt", " rag", "chatbot", "agent", "embedding", "generative", "machine learning", "ml model", "nlp", "computer vision", "recommendation"]);
+  // Signals that add complexity (and therefore tool/usage intensity).
+  const complexHits = has(["migration", "legacy", "integration", "real-time", "realtime", "compliance", "hipaa", "gdpr", "soc2", "scale", "distributed", "microservice", "multi-tenant", "high availability"]);
+  // Signals that the scope is genuinely small.
+  const simpleHits = has(["landing page", "brochure", "prototype", "poc", "proof of concept", "mvp", "static site", "single page", "simple site"]);
+
+  let mult = 1.0;
+  mult += Math.min(aiHits.length, 4) * 0.18;      // AI-heavy work burns the most tokens
+  mult += Math.min(complexHits.length, 4) * 0.10; // complexity raises usage
+  mult -= Math.min(simpleHits.length, 3) * 0.12;  // light scope spends less
+  mult = Math.min(2.5, Math.max(0.5, Number(mult.toFixed(2))));
+
+  const flags = [];
+  if (aiHits.length) flags.push("AI/LLM features drive token usage up");
+  if (complexHits.length) flags.push("Complexity signals: " + complexHits.slice(0, 2).map(s => s.trim()).join(", "));
+  if (simpleHits.length && !aiHits.length) flags.push("Scope reads light — costs may run lower");
+  if (/asap|urgent|tight deadline|aggressive timeline/.test(t)) flags.push("Tight timeline — expect heavier tool reliance");
+
+  return { adjustment_multiplier: mult, key_risk_flags: flags.slice(0, 3), source: "local" };
+}
+
 // Computes project AI cost as a low/mid/high range.
 export function calculateProjectCost(state) {
   // Clamp to valid range — model responses can return values outside spec

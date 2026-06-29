@@ -2,7 +2,7 @@
 
 import { STRINGS, CALC } from "./config.js";
 import { getState, updateState, resetState } from "./state.js";
-import { calculateMonthlyBurn, calculateProjectCost } from "./calculator.js";
+import { calculateMonthlyBurn, calculateProjectCost, analyzeBriefLocally } from "./calculator.js";
 import { renderOutput } from "./output.js";
 
 const TOTAL = 4;
@@ -33,7 +33,7 @@ export function renderStep(n) {
   if (n === 1) c.innerHTML = step1();
   else if (n === 2) c.innerHTML = step2();
   else if (n === 3) c.innerHTML = step3();
-  else if (n === 4) { c.innerHTML = ""; const s = getState(); const monthlyBurn = calculateMonthlyBurn(s); const project = calculateProjectCost(s); updateState("estimate", { monthlyBurn, project }); renderOutput(getState(), getState().estimate); }
+  else if (n === 4) { c.innerHTML = ""; const s = getState(); if (!s.projectAnalysis && (s.projectBrief || s.uploadedFileText)) { const local = analyzeBriefLocally(s.projectBrief || s.uploadedFileText); if (local) updateState("projectAnalysis", local); } const s2 = getState(); const monthlyBurn = calculateMonthlyBurn(s2); const project = calculateProjectCost(s2); updateState("estimate", { monthlyBurn, project }); renderOutput(getState(), getState().estimate); }
   if (n < 4) c.innerHTML += navHtml(n);
   void c.offsetWidth; c.classList.add("fade-in");
   if (n === 1) wire1(); else if (n === 2) wire2(); else if (n === 3) wire3();
