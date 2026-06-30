@@ -121,19 +121,19 @@ export function renderOutput(state, estimate) {
     <div class="card mb-4" id="export-card">
       <h3 class="font-semibold mb-2">${o.exportTitle}</h3>
       <p class="text-secondary text-sm mb-3">${o.exportSubtitle}</p>
-      <div class="flex gap-2"><button id="dl-csv" class="btn-primary">${o.exportCsv}</button><button id="dl-pdf" class="btn-ghost">${o.exportPdf}</button></div>
+      <div class="action-row"><button id="dl-csv" class="btn-primary">${o.exportCsv}</button><button id="dl-pdf" class="btn-ghost">${o.exportPdf}</button></div>
     </div>
     <div class="card" id="email-card">
       <h3 class="font-semibold accent mb-1">${o.waitlistTitle}</h3>
       <p class="text-secondary text-sm mb-3">${o.waitlistBody}</p>
-      <form id="lead-form" name="${CONFIG.netlifyFormName}" data-netlify="true">
+      <form id="lead-form" name="${CONFIG.netlifyFormName}" method="POST" action="${CONFIG.netlifyFormAction}" data-netlify="true">
         <input type="hidden" name="form-name" value="${CONFIG.netlifyFormName}" />
         <input type="hidden" name="team_name" value="${state.teamName}" />
         <input type="hidden" name="project_name" value="${state.projectName}" />
         <input type="hidden" name="estimate_low" value="${Math.round(estimate.project.low)}" />
         <input type="hidden" name="estimate_high" value="${Math.round(estimate.project.high)}" />
         <input type="hidden" name="adoption_level" value="${state.adoptionLevel}" />
-        <div class="flex gap-2"><input type="email" name="email" required placeholder="${o.emailPlaceholder}" class="input flex-1" /><button type="submit" class="btn-primary">${o.emailSubmit}</button></div>
+        <div class="form-row"><input type="email" name="email" required placeholder="${o.emailPlaceholder}" class="input" /><button type="submit" class="btn-primary">${o.emailSubmit}</button></div>
         <p class="error hidden mt-2" id="email-error">${STRINGS.errors.emailFailed}</p>
         <p class="text-secondary text-xs mt-2">${o.emailSmallprint}</p>
       </form>
@@ -203,7 +203,7 @@ export function renderOutput(state, estimate) {
     const err = document.getElementById("email-error");
     const body = new URLSearchParams(new FormData(form)).toString();
     try {
-      const res = await fetch("/", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body });
+      const res = await fetch(form.action, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body });
       if (!res.ok) throw new Error();
       form.parentElement.innerHTML = `<p class="accent">${o.emailConfirm}</p>`;
     } catch (e2) {

@@ -177,6 +177,7 @@ export const CONFIG = {
   openRouterEndpoint: "https://openrouter.ai/api/v1/chat/completions",
   maxTokens: 500,
   netlifyFormName: "cebula-leads",
+  netlifyFormAction: "/ai-cost-calculator/",
   storageKey: "cebula_or_key",
 };
 
