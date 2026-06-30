@@ -52,11 +52,13 @@ Turn a one-shot screen into something users save and share.
   Both work with **no email**. The old email gate was reframed into an honest optional opt-in.
   _Done:_ a user can download a branded summary without giving an email. ✅
 
-- [ ] **I — Promote real-cost ("override") mode to the primary path.**
-  The seats × actual-price override is the only non-invented number in the product. Make it
-  the default framing ("Enter what you actually pay — or estimate"), not a buried checkbox.
+- [x] **I — Promote real-cost ("override") mode to the primary path.**
+  The seats × actual-price override is the only non-invented number in the product. It's now
+  the first thing on the tools step: a two-card chooser ("Enter what you actually pay — most
+  accurate" vs "Estimate it for me") replaces the buried checkbox, and the tools hint + per-tool
+  seats×€/seat inputs follow the chosen mode.
   _Why:_ accuracy beats estimation; this is the most-praised feature in the review.
-  _Done when:_ real-cost entry is the first thing offered on the tools step.
+  _Done:_ real-cost entry is the first thing offered on the tools step. ✅
 
 - [ ] **I — Annualize and split seats vs usage.**
   Show €/year alongside €/month, and separate fixed seat cost from variable API/token cost.

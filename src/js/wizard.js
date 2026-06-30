@@ -117,10 +117,15 @@ function step2() {
   const cards = CALC.tools.map(tl => `<div class="tool-card ${s.selectedTools.includes(tl.id) ? "sel" : ""}" data-id="${tl.id}">${tl.name}<small>€${tl.defaultCost}</small>${s.selectedTools.includes(tl.id) ? ov(tl.id, tl.defaultCost) : ""}</div>`).join("");
   const custom = s.customTools.map(tl => `<div class="tool-card sel">${esc(tl.name)}${ov(tl.id, CALC.toolCosts.chatgpt)}</div>`).join("");
   const adopt = Object.entries(t.adoption).map(([k, v]) => `<label class="adopt ${s.adoptionLevel === k ? "sel" : ""}"><input type="radio" name="adopt" value="${k}" ${s.adoptionLevel === k ? "checked" : ""}/><strong>${v.name}</strong><span class="text-secondary text-sm">${v.desc}</span></label>`).join("");
-  return `<h2 class="text-xl font-semibold mb-1">${t.title}</h2><p class="text-secondary mb-5">${t.subtitle}</p>
-  <h3 class="text-sm text-secondary mb-2">${t.toolsHeader}</h3><div class="tool-grid">${cards}${custom}</div>
+  const modeCards = `<div class="mode-grid mb-6">
+    <label class="adopt mode ${s.realCostsMode ? "sel" : ""}"><input type="radio" name="costmode" value="real" ${s.realCostsMode ? "checked" : ""}/><strong>${t.costModeRealName} <span class="rec-pill">${t.costModeRealBadge}</span></strong><small>${t.costModeRealDesc}</small></label>
+    <label class="adopt mode ${s.realCostsMode ? "" : "sel"}"><input type="radio" name="costmode" value="estimate" ${s.realCostsMode ? "" : "checked"}/><strong>${t.costModeEstName}</strong><small>${t.costModeEstDesc}</small></label>
+  </div>`;
+  const toolsHint = s.realCostsMode ? t.toolsHintReal : t.toolsHintEstimate;
+  return `<h2 class="text-xl font-semibold mb-1">${t.title}</h2><p class="text-secondary mb-4">${t.subtitle}</p>
+  <h3 class="text-sm text-secondary mb-2">${t.costModeHeader}</h3>${modeCards}
+  <h3 class="text-sm text-secondary mb-1">${t.toolsHeader}</h3><p class="text-secondary text-sm mb-2">${toolsHint}</p><div class="tool-grid">${cards}${custom}</div>
   <div class="flex gap-2 mt-3"><input id="ct" class="input flex-1" placeholder="${t.addToolPlaceholder}"/><button id="ct-add" class="btn-ghost">${t.addTool}</button></div>
-  <label class="chk mt-3"><input type="checkbox" id="realcosts" ${s.realCostsMode ? "checked" : ""}/> ${t.realCostsToggle}</label><p class="text-secondary text-sm">${t.realCostsHint}</p>
   <h3 class="text-sm text-secondary mt-6 mb-1">${t.adoptionHeader}</h3><p class="text-secondary text-sm mb-2">${t.adoptionHint}</p><div class="adopt-grid">${adopt}</div>
   <details class="mt-5"><summary>${t.advancedToggle}</summary><div class="mt-3"><label class="chk"><input type="checkbox" id="dapi" ${s.directApiUsage ? "checked" : ""}/> ${t.directApiLabel}</label><div id="tok" class="${s.directApiUsage ? "" : "hidden"} mt-2"><label class="block text-sm mb-1">${t.tokensLabel}</label><input id="tokens" type="number" class="input w-full" value="${s.estimatedTokensPerMonth ?? ""}" placeholder="${t.tokensPlaceholder}"/></div></div></details>`;
 }
@@ -128,7 +133,7 @@ function wire2() {
   document.querySelectorAll(".tool-card[data-id]").forEach(c => c.addEventListener("click", e => { if (e.target.closest(".override")) return; const s = getState(); const id = c.dataset.id; const i = s.selectedTools.indexOf(id); if (i >= 0) { s.selectedTools.splice(i, 1); delete s.toolOverrides[id]; } else s.selectedTools.push(id); updateState("selectedTools", s.selectedTools); updateState("toolOverrides", s.toolOverrides); renderStep(2); }));
   document.getElementById("ct-add").addEventListener("click", () => { const v = document.getElementById("ct").value.trim(); if (!v) return; const s = getState(); s.customTools.push({ id: "ct" + Date.now(), name: v }); updateState("customTools", s.customTools); renderStep(2); });
   document.querySelectorAll('input[name=adopt]').forEach(r => r.addEventListener("change", () => { updateState("adoptionLevel", r.value); renderStep(2); }));
-  document.getElementById("realcosts").addEventListener("change", e => { updateState("realCostsMode", e.target.checked); renderStep(2); });
+  document.querySelectorAll('input[name=costmode]').forEach(r => r.addEventListener("change", () => { updateState("realCostsMode", r.value === "real"); renderStep(2); }));
   const writeOverride = (id) => { const s = getState(); const seats = +(document.querySelector(`.ov-seats[data-id="${id}"]`)?.value) || 0; const cost = +(document.querySelector(`.ov-cost[data-id="${id}"]`)?.value) || 0; s.toolOverrides[id] = { seats, costPerSeat: cost }; updateState("toolOverrides", s.toolOverrides); };
   document.querySelectorAll(".ov-seats, .ov-cost").forEach(el => el.addEventListener("input", () => writeOverride(el.dataset.id)));
   document.getElementById("dapi").addEventListener("change", e => { updateState("directApiUsage", e.target.checked); document.getElementById("tok").classList.toggle("hidden", !e.target.checked); });
