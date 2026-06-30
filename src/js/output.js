@@ -28,6 +28,22 @@ export function renderOutput(state, estimate) {
   const o = STRINGS.output;
   const infra = state.selfHosted ? (Number(state.selfHostedMonthlyCost) || 0) : 0;
   const mb = monthlyBreakdown(state);
+
+  // Number-aware "Cebula says" headline — leads with the user's own figures.
+  const sub = (str, map) => Object.entries(map).reduce((s, [k, v]) => s.split(`{${k}}`).join(v), str);
+  const variablePct = mb.total > 0 ? Math.round((mb.variable / mb.total) * 100) : 0;
+  const powerRoles = roles.filter(r => r.defaultWeight === "poweruser");
+  const powerHeads = powerRoles.reduce((s, r) => s + r.defaultHeadcount, 0);
+  const powerBurn = powerRoles.reduce((s, r) => s + roleMonthly(state, r), 0);
+  const powerPct = mb.seats > 0 ? Math.round((powerBurn / mb.seats) * 100) : 0;
+  let smartInsight;
+  if (mb.variable > 0 && variablePct >= 20) {
+    smartInsight = sub(o.insightVariable, { variable: formatCurrency(mb.variable), total: formatCurrency(mb.total), pct: variablePct });
+  } else if (powerHeads > 0 && powerPct >= 30) {
+    smartInsight = sub(o.insightPower, { amount: formatCurrency(powerBurn), n: powerHeads, seats: powerHeads > 1 ? "seats" : "seat", pct: powerPct });
+  } else {
+    smartInsight = sub(o.insightAnnual, { annual: formatCurrency(mb.annual), project: formatCurrency(estimate.project.mid) });
+  }
   const infraBreakdownRow = infra > 0 ? `<tr><td class="py-1">${o.selfHostedRow}</td><td class="text-right">—</td><td class="text-right">—</td><td class="text-right">${formatCurrency(infra)}</td></tr>` : "";
   const infraFormulaRow = infra > 0 ? `<tr><td class="py-1">${o.selfHostedRow}</td><td class="text-right">—</td><td class="text-right">—</td><td class="text-right">—</td><td class="text-right">${formatCurrency(infra)}</td></tr>` : "";
 
@@ -92,15 +108,15 @@ export function renderOutput(state, estimate) {
     </div>
     <div class="card mb-4"><h3 class="text-sm text-secondary mb-3">${o.chartTitle}</h3>${chartRows}</div>
     ${risk}
-    <div class="card insight mb-4"><p class="text-sm text-secondary mb-1">${o.insightLabel}</p><p>${selectInsight(state)}</p></div>
-    <div class="card pro mb-4"><h3 class="font-semibold accent">${o.proTitle}</h3><p class="text-secondary text-sm my-2">${o.proBody}</p><button id="waitlist" class="btn-ghost text-sm">${o.proCta}</button></div>
+    <div class="card insight mb-4"><p class="text-sm text-secondary mb-1">${o.insightLabel}</p><p>${smartInsight}</p><p class="text-secondary text-sm mt-2">${selectInsight(state)}</p></div>
     <div class="card mb-4" id="export-card">
       <h3 class="font-semibold mb-2">${o.exportTitle}</h3>
       <p class="text-secondary text-sm mb-3">${o.exportSubtitle}</p>
       <div class="flex gap-2"><button id="dl-csv" class="btn-primary">${o.exportCsv}</button><button id="dl-pdf" class="btn-ghost">${o.exportPdf}</button></div>
     </div>
     <div class="card" id="email-card">
-      <h3 class="font-semibold mb-2">${o.emailTitle}</h3>
+      <h3 class="font-semibold accent mb-1">${o.waitlistTitle}</h3>
+      <p class="text-secondary text-sm mb-3">${o.waitlistBody}</p>
       <form id="lead-form" name="${CONFIG.netlifyFormName}" data-netlify="true">
         <input type="hidden" name="form-name" value="${CONFIG.netlifyFormName}" />
         <input type="hidden" name="team_name" value="${state.teamName}" />
@@ -170,7 +186,6 @@ export function renderOutput(state, estimate) {
     f.classList.toggle("hidden");
     e.target.textContent = f.classList.contains("hidden") ? o.showFormula : o.hideFormula;
   });
-  document.getElementById("waitlist").addEventListener("click", () => document.getElementById("email-card").scrollIntoView({ behavior: "smooth" }));
 
   const form = document.getElementById("lead-form");
   form.addEventListener("submit", async (e) => {

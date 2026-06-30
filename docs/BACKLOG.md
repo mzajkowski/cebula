@@ -68,9 +68,10 @@ Turn a one-shot screen into something users save and share.
   _Why:_ finance budgets annually; the scary surprise costs are usage-based, not seats.
   _Done:_ output shows monthly + annual, seats + API as distinct lines. ✅
 
-- [ ] **N — Replace generic insight strings with number-aware insights.**
-  The "Cebula says" card uses static templates. Make at least one reference the user's actual
-  figures ("€X of your burn sits in 2 power users").
+- [x] **N — Replace generic insight strings with number-aware insights.**
+  The "Cebula says" card now leads with a number-aware line built from the user's own figures
+  (variable-spend share, power-user concentration, or annualised total), with the qualitative
+  template kept as a secondary note.
   _Why:_ currently reads as decoration.
 
 ---
