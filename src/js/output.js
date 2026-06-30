@@ -1,7 +1,7 @@
 // output.js — renders the full Step 4 results view into #wizard-content.
 
 import { STRINGS, CONFIG, CALC } from "./config.js";
-import { formatCurrency, formatRange, selectInsight } from "./calculator.js";
+import { formatCurrency, formatRange, selectInsight, monthlyBreakdown } from "./calculator.js";
 
 // Returns included roles (default + custom) with a positive headcount.
 function includedRoles(state) {
@@ -27,6 +27,7 @@ export function renderOutput(state, estimate) {
   const maxRole = Math.max(1, ...roles.map(r => roleMonthly(state, r)));
   const o = STRINGS.output;
   const infra = state.selfHosted ? (Number(state.selfHostedMonthlyCost) || 0) : 0;
+  const mb = monthlyBreakdown(state);
   const infraBreakdownRow = infra > 0 ? `<tr><td class="py-1">${o.selfHostedRow}</td><td class="text-right">—</td><td class="text-right">—</td><td class="text-right">${formatCurrency(infra)}</td></tr>` : "";
   const infraFormulaRow = infra > 0 ? `<tr><td class="py-1">${o.selfHostedRow}</td><td class="text-right">—</td><td class="text-right">—</td><td class="text-right">—</td><td class="text-right">${formatCurrency(infra)}</td></tr>` : "";
 
@@ -70,8 +71,13 @@ export function renderOutput(state, estimate) {
     <p class="text-secondary mb-5">${STRINGS.step4.subtitle}</p>
     <div class="card mb-4">
       <p class="text-secondary text-sm">${o.burnTitle}</p>
-      <p class="text-4xl font-bold accent">${formatCurrency(estimate.monthlyBurn)}</p>
-      <p class="text-secondary text-sm mb-3">${o.burnSubtitle}</p>
+      <p class="text-4xl font-bold accent">${formatCurrency(estimate.monthlyBurn)}<span class="text-lg text-secondary font-normal"> ${o.perMonth}</span></p>
+      <p class="text-secondary text-sm mb-3">${o.annualLine.replace("{annual}", formatCurrency(mb.annual))}</p>
+      <div class="split mb-3">
+        <div class="split-cell"><span class="split-label">${o.splitFixedLabel} <em class="split-tag">${o.splitFixedTag}</em></span><strong>${formatCurrency(mb.seats)}<span class="split-per"> ${o.perMonth}</span></strong></div>
+        <div class="split-cell"><span class="split-label">${o.splitVariableLabel} <em class="split-tag">${o.splitVariableTag}</em></span><strong>${formatCurrency(mb.variable)}<span class="split-per"> ${o.perMonth}</span></strong></div>
+      </div>
+      <p class="text-secondary text-xs mb-3">${o.splitHint}</p>
       <button id="toggle-breakdown" class="btn-ghost text-sm">${o.breakdownToggle}</button>
       <div id="breakdown" class="hidden mt-3"><table class="w-full text-sm">
         <thead><tr class="text-secondary"><th class="text-left">${o.colRole}</th><th class="text-right">${o.colHeadcount}</th><th class="text-right">${o.colWeight}</th><th class="text-right">${o.colMonthly}</th></tr></thead>
@@ -121,6 +127,9 @@ export function renderOutput(state, estimate) {
       ["People", totalPeople],
       [],
       ["Monthly team AI cost (EUR)", Math.round(estimate.monthlyBurn)],
+      ["Annual team AI cost (EUR)", Math.round(mb.annual)],
+      ["  Seats & subscriptions / month (fixed)", Math.round(mb.seats)],
+      ["  API & infra usage / month (variable)", Math.round(mb.variable)],
       [],
       ["Role breakdown"],
       ["Role", "People", "Usage", "Monthly (EUR)"],

@@ -39,16 +39,37 @@ function overridesTotal(state) {
   return Object.values(o).reduce((s, v) => s + (Number(v.seats) || 0) * (Number(v.costPerSeat) || 0), 0);
 }
 
-// Computes estimated monthly team AI subscription burn.
-export function calculateMonthlyBurn(state) {
-  const infra = state.selfHosted ? (Number(state.selfHostedMonthlyCost) || 0) : 0;
+// Fixed seat-subscription burn (real overrides where given, modeled elsewhere).
+function seatsCost(state) {
   const overrideIds = Object.keys(state.toolOverrides || {});
   if (state.realCostsMode && overrideIds.length) {
     const allTools = [...state.selectedTools, ...state.customTools.map(t => t.id)];
     const remaining = allTools.filter(id => !overrideIds.includes(id));
-    return overridesTotal(state) + (remaining.length ? multiplierBurn(state, remaining) : 0) + infra;
+    return overridesTotal(state) + (remaining.length ? multiplierBurn(state, remaining) : 0);
   }
-  return multiplierBurn(state) + infra;
+  return multiplierBurn(state);
+}
+
+// Variable monthly usage cost from direct-API tokens. Zero unless the user opted in.
+function usageCost(state) {
+  if (!state.directApiUsage) return 0;
+  const tokens = Number(state.estimatedTokensPerMonth) || 0;
+  return (tokens / 1_000_000) * CALC.tokenPricePerMillion;
+}
+
+// Splits the monthly burn into fixed (seats) vs variable (API usage + self-hosted infra).
+export function monthlyBreakdown(state) {
+  const seats = seatsCost(state);
+  const usage = usageCost(state);
+  const infra = state.selfHosted ? (Number(state.selfHostedMonthlyCost) || 0) : 0;
+  const variable = usage + infra;
+  const total = seats + variable;
+  return { seats, usage, infra, variable, total, annual: total * 12 };
+}
+
+// Computes estimated monthly team AI subscription burn.
+export function calculateMonthlyBurn(state) {
+  return monthlyBreakdown(state).total;
 }
 
 // Returns total headcount across all included roles.

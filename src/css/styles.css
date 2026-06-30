@@ -92,6 +92,15 @@ label, .label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-
 .chart-bar { background: var(--bg-subtle); border-radius: 2px; height: 14px; overflow: hidden; }
 .chart-fill { display: block; height: 100%; background: var(--accent); border-radius: 2px; }
 .chart-amt { text-align: right; font-size: .85rem; }
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.split-cell { display: flex; flex-direction: column; gap: 3px; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; background: var(--bg-subtle); }
+.split-cell strong { font-size: 1.25rem; font-weight: 600; }
+.split-per { font-size: .8rem; color: var(--text-tertiary); font-weight: 400; }
+.split-label { font-size: .8rem; color: var(--text-secondary); display: flex; align-items: center; gap: 7px; }
+.split-tag { font-style: normal; font-size: .62rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; border-radius: 999px; padding: 2px 7px; }
+.split-cell:first-child .split-tag { background: var(--accent-muted); color: var(--accent); }
+.split-cell:last-child .split-tag { background: rgba(245,158,11,.15); color: var(--warning); }
+@media (max-width: 480px) { .split { grid-template-columns: 1fr; } }
 .risk-pill { display: inline-block; background: rgba(245,158,11,.15); color: var(--warning); border-radius: 999px; padding: 5px 12px; margin: 3px; font-size: .8rem; }
 
 .banner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; background: var(--bg-surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 16px; max-width: 720px; margin: 16px auto 0; }

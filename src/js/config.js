@@ -94,6 +94,13 @@ export const STRINGS = {
   output: {
     burnTitle: "Monthly team AI cost",
     burnSubtitle: "estimated monthly team AI cost",
+    perMonth: "/mo",
+    annualLine: "{annual} / year",
+    splitFixedLabel: "Seats & subscriptions",
+    splitFixedTag: "fixed",
+    splitVariableLabel: "API & infra usage",
+    splitVariableTag: "variable",
+    splitHint: "Seats are predictable. Usage is where the surprises hide.",
     breakdownToggle: "Show role breakdown",
     breakdownHide: "Hide role breakdown",
     colRole: "Role",
@@ -191,6 +198,8 @@ export const CALC = {
   },
   // Baseline weekly € of AI spend per person on a project.
   baseWeeklyPerPerson: 35,
+  // Blended € per 1M tokens for direct-API usage (mix of input/output, mid-tier models).
+  tokenPricePerMillion: 8,
   // Low/high spread around the mid estimate.
   rangeMultipliers: { low: 0.8, high: 1.3 },
   // Default project length in weeks when none supplied.

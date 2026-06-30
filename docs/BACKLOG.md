@@ -60,10 +60,13 @@ Turn a one-shot screen into something users save and share.
   _Why:_ accuracy beats estimation; this is the most-praised feature in the review.
   _Done:_ real-cost entry is the first thing offered on the tools step. ✅
 
-- [ ] **I — Annualize and split seats vs usage.**
-  Show €/year alongside €/month, and separate fixed seat cost from variable API/token cost.
+- [x] **I — Annualize and split seats vs usage.**
+  The monthly burn card now shows **€/year** under the headline and a two-cell split: **Seats &
+  subscriptions (fixed)** vs **API & infra usage (variable)**, color-coded with a "seats are
+  predictable, usage is where the surprises hide" note. Direct-API tokens now cost into the burn
+  via `tokenPricePerMillion`, and CSV export carries the annual + split lines.
   _Why:_ finance budgets annually; the scary surprise costs are usage-based, not seats.
-  _Done when:_ output shows monthly + annual, seats + API as distinct lines.
+  _Done:_ output shows monthly + annual, seats + API as distinct lines. ✅
 
 - [ ] **N — Replace generic insight strings with number-aware insights.**
   The "Cebula says" card uses static templates. Make at least one reference the user's actual

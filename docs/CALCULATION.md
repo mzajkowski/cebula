@@ -7,12 +7,24 @@ Cebula uses two intentionally rough formulas. They are based on observed agency 
 For every included role with at least one person:
 
 ```
-monthlyBurn = Σ ( headcount × avgToolCost × roleWeight[weight] ) + selfHostedMonthlyCost
+seats = Σ ( headcount × avgToolCost × roleWeight[weight] )   # fixed
+usage = directApiUsage ? (estimatedTokensPerMonth / 1e6 × tokenPricePerMillion) : 0   # variable
+infra = selfHostedMonthlyCost   # variable (0 if none)
+
+monthlyBurn = seats + usage + infra
+annualBurn  = monthlyBurn × 12
 ```
+
+The output splits this into **fixed** (`seats`) vs **variable** (`usage + infra`) so finance can
+see the predictable subscription floor separately from the usage-driven costs that surprise people.
 
 - `avgToolCost` = average monthly cost of the selected tools, or `chatgpt` cost (€20) if none selected.
 - `roleWeight[weight]` = consumption/seat multiplier for that role's intensity.
+- `tokenPricePerMillion` = blended € per 1M direct-API tokens (default €8).
 - `selfHostedMonthlyCost` = user-entered GPU + ops estimate for local/self-hosted models (0 if none).
+
+In **real-cost mode**, tools with a seats × €/seat override use those real figures; any remaining
+selected tools fall back to the modeled seat burn above.
 
 Seat burn is flat-rate, so it is driven by **role weight only**. Team-wide adoption is *not* applied
 here — it would double-count intensity. Adoption drives the project token estimate instead (Formula 2).
@@ -53,6 +65,10 @@ Consumption multiplier: `light 0.6`, `moderate 1.0`, `heavy 1.5`, `poweruser 2.2
 
 ### baseWeeklyPerPerson
 `35` — baseline weekly € of project AI spend per person.
+
+### tokenPricePerMillion
+`8` — blended € per 1M direct-API tokens (input/output mix, mid-tier models). Drives the variable
+usage line when "direct API usage" is enabled. Raise for frontier models, lower for batch/cheap tiers.
 
 ### rangeMultipliers
 `low 0.8`, `high 1.3` — the spread shown around the mid estimate.
