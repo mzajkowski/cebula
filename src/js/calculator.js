@@ -6,7 +6,7 @@
 // Future: replace localStorage key with server-side auth + credit deduction
 // Pricing model when implemented: €20/5 credits, €100/20, €149/mo unlimited
 
-import { CALC, STRINGS } from "./config.js";
+import { CALC, STRINGS, CURRENCY } from "./config.js";
 
 // Returns the average monthly cost across a list of tool ids, or chatgpt fallback.
 function avgToolCost(state, ids) {
@@ -153,12 +153,21 @@ export function selectInsight(state) {
   return ins.fallback;
 }
 
-// Formats a number as a euro currency string.
+// Formats a number as a currency string for the active CURRENCY config.
 export function formatCurrency(number) {
-  return "€" + Math.round(number).toLocaleString("en-IE");
+  return new Intl.NumberFormat(CURRENCY.locale, {
+    style: "currency",
+    currency: CURRENCY.code,
+    maximumFractionDigits: 0,
+  }).format(Math.round(number));
 }
 
-// Formats a low/high pair as a euro range string.
+// Formats a currency amount followed by a unit suffix, e.g. "$38/person/week".
+export function formatCurrencyUnit(number, unit) {
+  return formatCurrency(number) + unit;
+}
+
+// Formats a low/high pair as a currency range string.
 export function formatRange(low, high) {
   return formatCurrency(low) + " – " + formatCurrency(high);
 }

@@ -1,7 +1,8 @@
 // config.js — all UI strings, app config, and formula constants. i18n-ready.
 
 // All UI copy lives here. No hardcoded strings elsewhere. Edit for translations.
-export const STRINGS = {
+// Use {symbol}, {code}, {defaultBaseRate} for currency-aware labels — resolved at load from CURRENCY.
+const STRINGS_RAW = {
   nav: {
     steps: ["Team Profile", "Tools & Adoption", "Project", "Estimate"],
     stepIndicator: "Step {n} of {total} — {label}",
@@ -27,7 +28,7 @@ export const STRINGS = {
     advancedToggle: "Advanced: self-hosted models",
     selfHostedLabel: "Using self-hosted or local models?",
     selfHostedOptions: ["Ollama", "LM Studio", "Private cloud", "Other"],
-    selfHostedCostLabel: "Estimated infra cost (GPU + ops) / month (€)",
+    selfHostedCostLabel: "Estimated infra cost (GPU + ops) / month ({symbol})",
     selfHostedCostHint: "Self-hosted isn't free — GPU time and the engineer babysitting it cost real money. Add a rough monthly figure so it shows up in the burn.",
     selfHostedCostPlaceholder: "e.g. 400",
   },
@@ -41,7 +42,7 @@ export const STRINGS = {
     costModeEstName: "Estimate it for me",
     costModeEstDesc: "We'll price each tool at typical market rates for a quick ballpark you can sharpen later.",
     toolsHeader: "Tools",
-    toolsHintReal: "Pick your tools, then enter real seats and €/seat for each.",
+    toolsHintReal: "Pick your tools, then enter real seats and {symbol}/seat for each.",
     toolsHintEstimate: "Pick the tools your team pays for — we'll price them at market rates.",
     addToolPlaceholder: "Your own tool",
     addTool: "Add tool",
@@ -58,9 +59,9 @@ export const STRINGS = {
     tokensLabel: "Estimated tokens / month (optional)",
     tokensPlaceholder: "e.g. 5000000",
     seatsLabel: "seats",
-    costPerSeatLabel: "€/seat",
+    costPerSeatLabel: "{symbol}/seat",
     seatsPlaceholder: "seats",
-    costPerSeatPlaceholder: "€/seat",
+    costPerSeatPlaceholder: "{symbol}/seat",
   },
   step3: {
     title: "Tell us about the project",
@@ -78,8 +79,8 @@ export const STRINGS = {
       other: "Other",
     },
     durationLabel: "Duration (weeks)",
-    baseRateLabel: "Baseline AI spend per person / week (€)",
-    baseRateHint: "Default €35 ≈ a Cursor seat plus daily ChatGPT/Claude use. This is the biggest lever on the project number — tune it to your team.",
+    baseRateLabel: "Baseline AI spend per person / week ({symbol})",
+    baseRateHint: "Default {defaultBaseRate} ≈ a Cursor seat plus daily ChatGPT/Claude use. This is the biggest lever on the project number — tune it to your team.",
     briefLabel: "Brief",
     briefPlaceholder: "Paste a short description, scope, or goals…",
     uploadLabel: "Upload a spec, RFP, or brief (optional)",
@@ -106,7 +107,7 @@ export const STRINGS = {
     colRole: "Role",
     colHeadcount: "People",
     colWeight: "Usage",
-    colMonthly: "€/month",
+    colMonthly: "{symbol}/month",
     selfHostedRow: "Self-hosted infra (GPU + ops)",
     projectTitle: "AI cost for the project",
     projectFor: "for {name} ({type})",
@@ -181,9 +182,41 @@ export const CONFIG = {
   storageKey: "cebula_or_key",
 };
 
-// Formula constants. Tune these based on your real data — see docs/CALCULATION.md
-export const CALC = {
-  // Monthly € per person per tool subscription.
+// Currency — pick a preset or set code/locale/fxFromEur manually. All CALC money values scale from EUR defaults.
+export const CURRENCY_PRESETS = {
+  EUR: { code: "EUR", locale: "en-IE", fxFromEur: 1 },
+  USD: { code: "USD", locale: "en-US", fxFromEur: 1.08 },
+  GBP: { code: "GBP", locale: "en-GB", fxFromEur: 0.86 },
+  PLN: { code: "PLN", locale: "pl-PL", fxFromEur: 4.32 },
+  CHF: { code: "CHF", locale: "de-CH", fxFromEur: 0.97 },
+};
+
+// Active currency for this deployment. Spread a preset: { ...CURRENCY_PRESETS.USD }
+export const CURRENCY = { ...CURRENCY_PRESETS.USD };
+
+// Returns the narrow currency symbol for a locale/code pair.
+function currencySymbol(code, locale) {
+  return new Intl.NumberFormat(locale, { style: "currency", currency: code, currencyDisplay: "narrowSymbol" })
+    .formatToParts(0).find(p => p.type === "currency")?.value ?? code;
+}
+
+// Scales a EUR-authored money constant to the active currency.
+function scaleMoney(value, fx) {
+  return fx === 1 ? value : Math.round(value * fx);
+}
+
+// Deep-resolves {symbol}, {code}, {defaultBaseRate} placeholders in STRINGS.
+function resolveCurrencyCopy(value, tokens) {
+  if (typeof value === "string") {
+    return Object.entries(tokens).reduce((s, [k, v]) => s.replaceAll(`{${k}}`, v), value);
+  }
+  if (Array.isArray(value)) return value.map(v => resolveCurrencyCopy(v, tokens));
+  return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, resolveCurrencyCopy(v, tokens)]));
+}
+
+// Formula constants authored in EUR — see docs/CALCULATION.md. Scaled to CURRENCY on export.
+const CALC_EUR = {
+  // Monthly per-person tool subscription (EUR base values).
   toolCosts: {
     // GitHub Copilot Individual ~$10, Business ~$19 — using midpoint as agencies typically mix both tiers
     claude: 20, chatgpt: 20, copilot: 15, cursor: 20,
@@ -201,9 +234,9 @@ export const CALC = {
     // Retainer/maintenance — steady state, lower AI intensity than greenfield work
     retainer: 0.8, other: 1.0,
   },
-  // Baseline weekly € of AI spend per person on a project.
+  // Baseline weekly AI spend per person on a project (EUR base).
   baseWeeklyPerPerson: 35,
-  // Blended € per 1M tokens for direct-API usage (mix of input/output, mid-tier models).
+  // Blended per 1M tokens for direct-API usage (EUR base).
   tokenPricePerMillion: 8,
   // Low/high spread around the mid estimate.
   rangeMultipliers: { low: 0.8, high: 1.3 },
@@ -244,3 +277,24 @@ export const CALC = {
     { id: "whisper", name: "Whisper", defaultCost: 5 },
   ],
 };
+
+// Scales EUR-authored CALC money fields to the active currency.
+function scaleCalc(calc, fx) {
+  if (fx === 1) return calc;
+  const toolCosts = Object.fromEntries(Object.entries(calc.toolCosts).map(([k, v]) => [k, scaleMoney(v, fx)]));
+  return {
+    ...calc,
+    toolCosts,
+    baseWeeklyPerPerson: scaleMoney(calc.baseWeeklyPerPerson, fx),
+    tokenPricePerMillion: Math.round(calc.tokenPricePerMillion * fx * 100) / 100,
+    tools: calc.tools.map(t => ({ ...t, defaultCost: toolCosts[t.id] ?? t.defaultCost })),
+  };
+}
+
+export const CALC = scaleCalc(CALC_EUR, CURRENCY.fxFromEur);
+
+export const STRINGS = resolveCurrencyCopy(STRINGS_RAW, {
+  symbol: currencySymbol(CURRENCY.code, CURRENCY.locale),
+  code: CURRENCY.code,
+  defaultBaseRate: String(CALC.baseWeeklyPerPerson),
+});

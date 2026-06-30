@@ -1,7 +1,7 @@
 // output.js — renders the full Step 4 results view into #wizard-content.
 
-import { STRINGS, CONFIG, CALC } from "./config.js";
-import { formatCurrency, formatRange, selectInsight, monthlyBreakdown } from "./calculator.js";
+import { STRINGS, CONFIG, CALC, CURRENCY } from "./config.js";
+import { formatCurrency, formatCurrencyUnit, formatRange, selectInsight, monthlyBreakdown } from "./calculator.js";
 
 // Returns included roles (default + custom) with a positive headcount.
 function includedRoles(state) {
@@ -75,7 +75,7 @@ export function renderOutput(state, estimate) {
   const formulaProject = `<table class="w-full text-sm"><thead><tr class="text-secondary"><th class="text-left">${o.fInput}</th><th class="text-right">${o.fValue}</th></tr></thead><tbody>
     <tr><td>${o.fTeamSize}</td><td class="text-right">${totalPeople} people</td></tr>
     <tr><td>${o.fDuration}</td><td class="text-right">${state.projectDurationWeeks ?? CALC.defaultDurationWeeks} weeks</td></tr>
-    <tr><td>${o.fBaseRate}</td><td class="text-right">€${state.baseWeeklyPerPerson ?? CALC.baseWeeklyPerPerson}/person/week</td></tr>
+    <tr><td>${o.fBaseRate}</td><td class="text-right">${formatCurrencyUnit(state.baseWeeklyPerPerson ?? CALC.baseWeeklyPerPerson, "/person/week")}</td></tr>
     <tr><td>${o.fTypeMult}</td><td class="text-right">${typeMult}× (${typeLabel})</td></tr>
     <tr><td>${o.fAdoptMult}</td><td class="text-right">${adoptMult}× (${STRINGS.step2.adoption[state.adoptionLevel]?.name || state.adoptionLevel})</td></tr>
     <tr><td>${o.fAiAdjust}</td><td class="text-right">${aiAdj}× (${adjSource})</td></tr>
@@ -152,19 +152,19 @@ export function renderOutput(state, estimate) {
       ["Duration (weeks)", state.projectDurationWeeks ?? CALC.defaultDurationWeeks],
       ["People", totalPeople],
       [],
-      ["Monthly team AI cost (EUR)", Math.round(estimate.monthlyBurn)],
-      ["Annual team AI cost (EUR)", Math.round(mb.annual)],
+      ["Monthly team AI cost (" + CURRENCY.code + ")", Math.round(estimate.monthlyBurn)],
+      ["Annual team AI cost (" + CURRENCY.code + ")", Math.round(mb.annual)],
       ["  Seats & subscriptions / month (fixed)", Math.round(mb.seats)],
       ["  API & infra usage / month (variable)", Math.round(mb.variable)],
       [],
       ["Role breakdown"],
-      ["Role", "People", "Usage", "Monthly (EUR)"],
+      ["Role", "People", "Usage", "Monthly (" + CURRENCY.code + ")"],
       ...roles.map(r => [r.name, r.defaultHeadcount, STRINGS.step1.weights[r.defaultWeight] || r.defaultWeight, Math.round(roleMonthly(state, r))]),
     ];
     if (infra > 0) rows.push([o.selfHostedRow, "—", "—", Math.round(infra)]);
-    rows.push([], ["Project AI cost (EUR)"], ["Low", "Mid", "High"], [Math.round(estimate.project.low), Math.round(estimate.project.mid), Math.round(estimate.project.high)]);
+    rows.push([], ["Project AI cost (" + CURRENCY.code + ")"], ["Low", "Mid", "High"], [Math.round(estimate.project.low), Math.round(estimate.project.mid), Math.round(estimate.project.high)]);
     rows.push([], ["Assumptions"],
-      ["Base rate (EUR/person/week)", state.baseWeeklyPerPerson ?? CALC.baseWeeklyPerPerson],
+      ["Base rate (" + CURRENCY.code + "/person/week)", state.baseWeeklyPerPerson ?? CALC.baseWeeklyPerPerson],
       ["Adoption", STRINGS.step2.adoption[state.adoptionLevel]?.name || state.adoptionLevel],
       ["Project type multiplier", typeMult],
       ["Adoption multiplier", adoptMult],

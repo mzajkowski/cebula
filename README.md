@@ -35,7 +35,8 @@ All constants in `src/js/config.js`:
 
 - `STRINGS` — all UI copy, edit for translations
 - `CONFIG` — model selection, endpoints
-- `CALC` — formula constants, tune to your real data
+- `CURRENCY` — currency code, locale, and FX scale for your market (see presets)
+- `CALC` — formula constants, tune to your real data (auto-scaled from EUR when `fxFromEur` ≠ 1)
 
 ## How the formula works
 

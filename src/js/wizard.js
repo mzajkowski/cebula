@@ -2,7 +2,7 @@
 
 import { STRINGS, CALC } from "./config.js";
 import { getState, updateState, resetState } from "./state.js";
-import { calculateMonthlyBurn, calculateProjectCost, analyzeBriefLocally } from "./calculator.js";
+import { calculateMonthlyBurn, calculateProjectCost, analyzeBriefLocally, formatCurrency } from "./calculator.js";
 import { renderOutput } from "./output.js";
 
 const TOTAL = 4;
@@ -114,7 +114,7 @@ function step2() {
     const o = s.toolOverrides[id] || { seats: headcount, costPerSeat: seed };
     return `<div class="override"><label>${t.seatsLabel}<input type="number" min="1" class="input ov-seats" data-id="${id}" value="${o.seats}" placeholder="${t.seatsPlaceholder}"/></label><label>${t.costPerSeatLabel}<input type="number" min="0" class="input ov-cost" data-id="${id}" value="${o.costPerSeat}" placeholder="${t.costPerSeatPlaceholder}"/></label></div>`;
   };
-  const cards = CALC.tools.map(tl => `<div class="tool-card ${s.selectedTools.includes(tl.id) ? "sel" : ""}" data-id="${tl.id}">${tl.name}<small>€${tl.defaultCost}</small>${s.selectedTools.includes(tl.id) ? ov(tl.id, tl.defaultCost) : ""}</div>`).join("");
+  const cards = CALC.tools.map(tl => `<div class="tool-card ${s.selectedTools.includes(tl.id) ? "sel" : ""}" data-id="${tl.id}">${tl.name}<small>${formatCurrency(tl.defaultCost)}</small>${s.selectedTools.includes(tl.id) ? ov(tl.id, tl.defaultCost) : ""}</div>`).join("");
   const custom = s.customTools.map(tl => `<div class="tool-card sel">${esc(tl.name)}${ov(tl.id, CALC.toolCosts.chatgpt)}</div>`).join("");
   const adopt = Object.entries(t.adoption).map(([k, v]) => `<label class="adopt ${s.adoptionLevel === k ? "sel" : ""}"><input type="radio" name="adopt" value="${k}" ${s.adoptionLevel === k ? "checked" : ""}/><strong>${v.name}</strong><span class="text-secondary text-sm">${v.desc}</span></label>`).join("");
   const modeCards = `<div class="mode-grid mb-6">
