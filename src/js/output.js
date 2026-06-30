@@ -28,6 +28,7 @@ export function renderOutput(state, estimate) {
   const o = STRINGS.output;
   const infra = state.selfHosted ? (Number(state.selfHostedMonthlyCost) || 0) : 0;
   const mb = monthlyBreakdown(state);
+  const printDate = new Date().toLocaleDateString("en-GB", { year: "numeric", month: "long", day: "numeric" });
 
   // Number-aware "Cebula says" headline — leads with the user's own figures.
   const sub = (str, map) => Object.entries(map).reduce((s, [k, v]) => s.split(`{${k}}`).join(v), str);
@@ -83,6 +84,14 @@ export function renderOutput(state, estimate) {
   const formula = `<div class="card mt-4 mb-4"><button id="toggle-formula" class="btn-ghost text-sm">${o.showFormula}</button><div id="formula" class="hidden mt-3"><h3 class="text-sm text-secondary mb-2">${o.formulaBurnTitle}</h3>${formulaBurn}<h3 class="text-sm text-secondary mt-4 mb-2">${o.formulaProjectTitle}</h3>${formulaProject}<p class="text-secondary text-xs mt-3">${o.formulaNote}</p></div></div>`;
 
   c.innerHTML = `
+    <div class="print-only print-header">
+      <img class="print-logo" src="../assets/logo-calculator.png" alt="Cebula AI Cost Calculator" />
+      <div class="print-meta">
+        <p class="print-meta-title">${o.printTitle}</p>
+        <p class="print-meta-sub">${o.printPreparedFor.replace("{team}", state.teamName || "your team")}${state.projectName ? " · " + state.projectName : ""}</p>
+        <p class="print-meta-date">${printDate}</p>
+      </div>
+    </div>
     <h2 class="text-xl font-semibold mb-1">${STRINGS.step4.title}</h2>
     <p class="text-secondary mb-5">${STRINGS.step4.subtitle}</p>
     <div class="card mb-4">
@@ -130,6 +139,7 @@ export function renderOutput(state, estimate) {
       </form>
     </div>
     ${formula}
+    <div class="print-only print-footer">${o.printFooter}</div>
     <div class="restart-wrap"><button id="restart" class="btn-ghost">${STRINGS.nav.restart}</button><p class="text-secondary text-xs mt-2">Your estimate is not saved — export it before restarting</p></div>`;
 
   const csvEscape = (v) => { const s = String(v ?? ""); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };

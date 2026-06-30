@@ -126,10 +126,74 @@ details summary { cursor: pointer; color: var(--accent); font-size: .9rem; }
   .nav-row .btn-primary { flex: 1; }
 }
 
+/* Print-only elements are hidden on screen, revealed in @media print. */
+.print-only { display: none; }
+
 @media print {
-  body { background: #fff !important; }
-  .header, .progress, .step-indicator, #banner, .nav-row, .pro, #export-card, #email-card, .restart-wrap, button { display: none !important; }
-  .wrap { max-width: 100%; padding: 0; }
-  .card { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
-  #breakdown, #formula { display: block !important; }
+  @page { margin: 18mm 16mm; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  body { background: #fff !important; color: var(--text-primary); font-size: 10.5pt; line-height: 1.5; }
+  .header, .progress, .step-indicator, #banner, .nav-row, .pro,
+  #export-card, #email-card, .restart-wrap, button { display: none !important; }
+  .fade-in { animation: none !important; }
+
+  .wrap { max-width: 100%; padding: 0; margin: 0; }
+
+  /* Document title block */
+  h2 { font-size: 18pt; margin: 0 0 4px; letter-spacing: -0.02em; }
+  #wizard-content > p.text-secondary { margin: 0 0 22px; color: var(--text-secondary); }
+
+  /* Branded print header */
+  .print-only { display: block; }
+  .print-header {
+    display: flex !important;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 0 0 16px;
+    margin: 0 0 26px;
+    border-bottom: 2px solid var(--accent);
+    break-after: avoid;
+  }
+  .print-logo { height: 40px; width: auto; flex: 0 0 auto; }
+  .print-meta { text-align: right; line-height: 1.45; min-width: 0; }
+  .print-meta-title { font-weight: 600; font-size: 12pt; color: var(--text-primary); margin: 0; letter-spacing: -0.01em; }
+  .print-meta-sub { font-size: 9.5pt; color: var(--text-secondary); margin: 2px 0 0; }
+  .print-meta-date { font-size: 8.5pt; color: var(--text-tertiary); margin: 2px 0 0; }
+
+  /* Cards */
+  .card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin: 0 0 14px;
+    background: #fff;
+  }
+  .card.insight { border-left: 3px solid var(--accent); background: var(--accent-muted); padding: 18px 20px; }
+  .card h3 { margin-top: 0; }
+
+  /* Headline numbers keep emphasis but sit on the page calmly */
+  .text-4xl { font-size: 26pt; line-height: 1.1; }
+
+  /* Tables: tidy rules and breathing room */
+  #breakdown, #formula { display: block !important; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { padding: 0 6px 6px; border-bottom: 1px solid var(--border); font-size: 9pt; }
+  tbody td { padding: 5px 6px; border-bottom: 1px solid var(--border-subtle); }
+  tbody tr:last-child td { border-bottom: none; }
+  tr.font-semibold td { border-top: 1px solid var(--border); border-bottom: none; padding-top: 7px; }
+
+  /* Branded print footer */
+  .print-footer {
+    margin-top: 24px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-subtle);
+    text-align: center;
+    font-size: 8.5pt;
+    color: var(--text-tertiary);
+    letter-spacing: 0.01em;
+  }
 }
