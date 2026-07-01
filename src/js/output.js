@@ -2,6 +2,7 @@
 
 import { STRINGS, CONFIG, CALC, CURRENCY } from "./config.js";
 import { formatCurrency, formatCurrencyUnit, formatRange, selectInsight, monthlyBreakdown } from "./calculator.js";
+import { buildShareCard, canvasToBlob } from "./share.js";
 
 // Returns included roles (default + custom) with a positive headcount.
 function includedRoles(state) {
@@ -123,6 +124,16 @@ export function renderOutput(state, estimate) {
       <p class="text-secondary text-sm mb-3">${o.exportSubtitle}</p>
       <div class="action-row"><button id="dl-csv" class="btn-primary">${o.exportCsv}</button><button id="dl-pdf" class="btn-ghost">${o.exportPdf}</button></div>
     </div>
+    <div class="card mb-4 no-print" id="share-card">
+      <h3 class="font-semibold mb-2">${o.shareTitle}</h3>
+      <p class="text-secondary text-sm mb-3">${o.shareSubtitle}</p>
+      <div class="share-preview"><img id="share-img" alt="${o.shareImageAlt}" /></div>
+      <div class="action-row mt-3">
+        <button id="share-native" class="btn-primary hidden">${o.shareShare}</button>
+        <button id="share-dl" class="btn-ghost">${o.shareDownload}</button>
+        <button id="share-copy" class="btn-ghost hidden">${o.shareCopy}</button>
+      </div>
+    </div>
     <div class="card" id="email-card">
       <h3 class="font-semibold accent mb-1">${o.waitlistTitle}</h3>
       <p class="text-secondary text-sm mb-3">${o.waitlistBody}</p>
@@ -184,6 +195,68 @@ export function renderOutput(state, estimate) {
     document.getElementById("breakdown")?.classList.remove("hidden");
     document.getElementById("formula")?.classList.remove("hidden");
     window.print();
+  });
+
+  // --- Shareable highlights image ----------------------------------------
+  const stripTags = (s) => String(s || "").replace(/<[^>]*>/g, "");
+  const shareData = {
+    label: o.shareCardLabel,
+    date: printDate,
+    team: state.teamName || "",
+    project: state.projectName || "",
+    monthlyLabel: o.shareCardMonthly,
+    monthly: formatCurrency(estimate.monthlyBurn),
+    annual: o.shareCardAnnual.replace("{annual}", formatCurrency(mb.annual)),
+    projectLabel: o.shareCardProject,
+    projectRange: formatRange(estimate.project.low, estimate.project.high),
+    insight: stripTags(smartInsight),
+    footer: o.shareCardFooter,
+    logoSrc: "../assets/logo.png",
+  };
+
+  let shareBlob = null;
+  const shareImg = document.getElementById("share-img");
+  const nativeBtn = document.getElementById("share-native");
+  const copyBtn = document.getElementById("share-copy");
+  const dlBtn = document.getElementById("share-dl");
+  const shareFileName = slug + "-ai-cost-highlights.png";
+
+  buildShareCard(shareData).then(async (canvas) => {
+    shareBlob = await canvasToBlob(canvas);
+    if (shareBlob && shareImg) shareImg.src = URL.createObjectURL(shareBlob);
+
+    // Native share (mobile / supporting browsers) — only if files can be shared.
+    const file = shareBlob ? new File([shareBlob], shareFileName, { type: "image/png" }) : null;
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      nativeBtn.classList.remove("hidden");
+      nativeBtn.addEventListener("click", async () => {
+        try {
+          await navigator.share({ files: [file], title: o.shareCardLabel, text: o.shareText });
+        } catch { /* user cancelled */ }
+      });
+    }
+
+    // Copy to clipboard where supported.
+    if (shareBlob && navigator.clipboard && window.ClipboardItem) {
+      copyBtn.classList.remove("hidden");
+      copyBtn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.write([new ClipboardItem({ "image/png": shareBlob })]);
+          const t = copyBtn.textContent;
+          copyBtn.textContent = o.shareCopied;
+          setTimeout(() => { copyBtn.textContent = t; }, 1800);
+        } catch { /* clipboard blocked */ }
+      });
+    }
+  });
+
+  dlBtn.addEventListener("click", () => {
+    if (!shareBlob) return;
+    const url = URL.createObjectURL(shareBlob);
+    const a = document.createElement("a");
+    a.href = url; a.download = shareFileName;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   });
 
   document.getElementById("toggle-breakdown").addEventListener("click", (e) => {

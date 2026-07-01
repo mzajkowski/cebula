@@ -122,6 +122,10 @@ details summary { cursor: pointer; color: var(--accent); font-size: .9rem; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .form-row, .action-row { display: flex; gap: 8px; align-items: stretch; }
+.action-row { flex-wrap: wrap; }
+.share-preview { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--bg-subtle); line-height: 0; }
+.share-preview img { display: block; width: 100%; height: auto; }
+.no-print { display: block; }
 .form-row .input { flex: 1; min-width: 0; }
 .form-row .btn-primary, .action-row .btn-primary, .action-row .btn-ghost { flex: 0 0 auto; white-space: nowrap; }
 
@@ -141,7 +145,7 @@ details summary { cursor: pointer; color: var(--accent); font-size: .9rem; }
 
   body { background: #fff !important; color: var(--text-primary); font-size: 10.5pt; line-height: 1.5; }
   .header, .progress, .step-indicator, #banner, .nav-row, .pro,
-  #export-card, #email-card, .restart-wrap, button { display: none !important; }
+  #export-card, #share-card, .no-print, #email-card, .restart-wrap, button { display: none !important; }
   .fade-in { animation: none !important; }
 
   .wrap { max-width: 100%; padding: 0; margin: 0; }
