@@ -125,7 +125,7 @@ const STRINGS_RAW = {
     fRole: "Role", fPeople: "People", fBasis: "Tool cost basis", fWeight: "Usage weight", fMonthly: "Monthly est.", fTotal: "Total",
     fInput: "Input", fValue: "Value",
     fTeamSize: "Team size", fDuration: "Duration", fBaseRate: "Base rate", fTypeMult: "Project type multiplier", fAdoptMult: "Adoption multiplier", fAiAdjust: "AI adjustment", fRange: "Estimated range",
-    formulaNote: "All base rates and multipliers are in the open source config. Contribute real data at [github link placeholder].",
+    formulaNote: "All base rates and multipliers are in the open source config. Contribute real data at github.com/mzajkowski/cebula.",
     exportTitle: "Export & share",
     exportSubtitle: "Download a copy you can drop into a proposal, a spreadsheet, or send on. No email required.",
     exportCsv: "Download CSV",

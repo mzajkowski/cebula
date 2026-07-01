@@ -1,10 +1,7 @@
 // calculator.js — formula-based cost estimation and insight selection.
 
-// PRO FEATURE GATE
-// AI parsing (api.js) is a Pro feature — not yet implemented in paid tier
-// For now: falls back to formula-only if no OpenRouter key present
-// Future: replace localStorage key with server-side auth + credit deduction
-// Pricing model when implemented: €20/5 credits, €100/20, €149/mo unlimited
+// Optional AI parsing (api.js) falls back to local formula-only analysis when no
+// OpenRouter key is present. Keep commercial packaging out of the client code.
 
 import { CALC, STRINGS, CURRENCY } from "./config.js";
 

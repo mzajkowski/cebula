@@ -39,7 +39,7 @@ high = base × rangeMultipliers.high
 mid  = (low + high) / 2
 ```
 
-`adjustmentMultiplier` comes from the OpenRouter brief analysis (default `1.0`).
+`adjustmentMultiplier` comes from local brief analysis or optional OpenRouter brief analysis (default `1.0`).
 
 ## Constants reference
 
@@ -75,7 +75,7 @@ usage line when "direct API usage" is enabled. Raise for frontier models, lower 
 
 ## adjustment_multiplier
 
-When an OpenRouter key is present, Cebula sends the brief and receives a float between 0.5 and 2.5. `1.0` is a baseline medium-complexity project. Higher = more AI usage. It multiplies the project base directly.
+Cebula can derive this locally from brief keywords, or from OpenRouter when a user brings their own key. The value is a float between 0.5 and 2.5. `1.0` is a baseline medium-complexity project. Higher = more AI usage. It multiplies the project base directly.
 
 ## Worked example
 

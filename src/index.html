@@ -32,6 +32,7 @@
       <div class="nav-links" id="nav-links">
         <a class="nav-link" href="#tools" data-i18n="navTools">Tools</a>
         <a class="nav-link" href="#about" data-i18n="navAbout">About</a>
+        <a class="nav-link" href="https://github.com/mzajkowski/cebula" target="_blank" rel="noopener noreferrer" data-i18n="navSource">GitHub</a>
         <a class="btn-primary" href="/ai-cost-calculator/" data-i18n="navCta">Try the AI Cost Calculator →</a>
       </div>
       <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
@@ -48,6 +49,7 @@
       <p class="hero-sub" data-i18n="heroSub">Practical, no-nonsense tools for agencies and tech teams who want a clear picture of their costs — not guesswork.</p>
       <div class="hero-ctas">
         <a class="btn-primary" href="/ai-cost-calculator/" data-i18n="heroCtaPrimary">Try the AI Cost Calculator →</a>
+        <a class="btn-ghost github-cta" href="https://github.com/mzajkowski/cebula" target="_blank" rel="noopener noreferrer" data-i18n="heroCtaGithub">Star on GitHub ★</a>
         <a class="btn-ghost" href="#tools" data-i18n="heroCtaGhost">See all tools ↓</a>
       </div>
       <div class="hero-rule"></div>
@@ -70,7 +72,10 @@
           <div class="tags">
             <span class="tag">Free</span><span class="tag">Open source</span><span class="tag">No signup</span>
           </div>
-          <a class="btn-primary" href="/ai-cost-calculator/" data-i18n="card1Cta">Open tool →</a>
+          <div class="tool-actions">
+            <a class="btn-primary" href="/ai-cost-calculator/" data-i18n="card1Cta">Open tool →</a>
+            <a class="btn-ghost" href="https://github.com/mzajkowski/cebula" target="_blank" rel="noopener noreferrer" data-i18n="card1SourceCta">View source</a>
+          </div>
         </article>
 
         <!-- Card 2 -->
@@ -133,7 +138,7 @@
     <div class="footer-inner">
       <span class="footer-brand">🧅 Cebula · © 2026 Marcin Zajkowski</span>
       <div class="footer-links">
-        <a href="#" target="_blank" rel="noopener noreferrer">Open source</a>
+        <a href="https://github.com/mzajkowski/cebula" target="_blank" rel="noopener noreferrer">GitHub source</a>
         <a href="#tools">Tools</a>
       </div>
     </div>
@@ -143,11 +148,13 @@
     const LANDING_STRINGS = {
       navTools: "Tools",
       navAbout: "About",
+      navSource: "GitHub",
       navCta: "Try the calculator →",
       heroEyebrow: "TOOLS FOR MODERN TEAMS",
       heroTitle: "Stop guessing what AI is costing you.",
       heroSub: "Practical, no-nonsense tools for agencies and tech teams who want a clear picture of their costs — not guesswork.",
       heroCtaPrimary: "Try the AI Cost Calculator →",
+      heroCtaGithub: "Star on GitHub ★",
       heroCtaGhost: "See all tools ↓",
       toolsEyebrow: "THE TOOLS",
       toolsTitle: "Practical. Opinionated. Open source.",
@@ -156,6 +163,7 @@
       card1Name: "AI Cost Calculator",
       card1Desc: "Estimate what AI tools are really costing your team and projects. Team profile, tool selection, project type — formula-based, transparent, no account needed.",
       card1Cta: "Open tool →",
+      card1SourceCta: "View source",
       card2Status: "COMING SOON",
       card2Name: "Scope Validator",
       card2Desc: "Stress-test a project proposal before you sign. Upload an RFP or paste a brief — get a structured view of what's missing, what's inflated, and what to push back on.",

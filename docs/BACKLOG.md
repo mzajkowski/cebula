@@ -78,7 +78,7 @@ Turn a one-shot screen into something users save and share.
 
 ## Phase 2 — Measure, don't just estimate (the pivot)
 
-This is where a vitamin becomes a painkiller and a subscription becomes justifiable.
+This is where the tool moves from estimate-only to measured, recurring visibility.
 
 - [ ] **C — Invoice / CSV import for actual spend.**
   Let users upload provider invoices or a CSV and get their *real* current AI spend, categorized.
@@ -116,16 +116,16 @@ Defensible assets and the viral loop.
 
 ---
 
-## Phase 4 — Commercial coherence
+## Phase 4 — Packaging Coherence
 
-Do **not** ship paid tiers until Phase 1–2 land.
+Keep public packaging simple until Phase 1–2 land.
 
-- [ ] **C — Fix the pricing model before charging.**
-  Current tiers sell "AI-enhanced estimates" while the AI feature requires the *customer's own*
-  OpenRouter key — incoherent. Either move LLM analysis server-side or drop it from the paid story.
-  Tie price to *ongoing visibility* (import/connectors), not one-shot estimates.
-  _Why:_ you can't charge for a feature the user must also pay a third party to run.
-  _Done when:_ a single honest plan maps to a feature set the user can't trivially self-serve.
+- [ ] **C — Keep any paid packaging tied to real ongoing value.**
+  If paid features appear later, tie them to saved history, imports, connectors, reporting,
+  and benchmark visibility rather than one-shot estimates.
+  _Why:_ the open-source tool should stay useful on its own, while hosted features should solve
+  problems the static tool cannot.
+  _Done when:_ public messaging clearly separates the open-source toolkit from any hosted services.
 
 - [~] **I — Unify branding & promise.**
   Landing tagline, calculator tagline, and product name currently tell three stories. Pick one.
@@ -143,8 +143,8 @@ Do **not** ship paid tiers until Phase 1–2 land.
 ## Sequencing notes
 
 - **Next two weeks:** finish Phase 0 (self-hosted toggle, honest project basis, intensity knobs)
-  + start Phase 1 export. These are launch-blockers for any *paid* positioning; the free tool can
+  + start Phase 1 export. These are launch-blockers for any hosted positioning; the free tool can
   ship now as a top-of-funnel lead magnet.
-- **Do not** launch €149/mo or "real numbers" precision claims until Phase 1–2 exist.
+- **Do not** publish paid-package details or precision claims until Phase 1–2 exist.
 - The strategic bet (per the panel): **measure real spend + own the benchmark.** Everything in
   Phase 2–3 should be prioritized over polishing the synthetic estimator.
