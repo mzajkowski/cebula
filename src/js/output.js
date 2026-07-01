@@ -59,7 +59,7 @@ export function renderOutput(state, estimate) {
 
   const flags = state.projectAnalysis?.key_risk_flags;
   const risk = Array.isArray(flags) && flags.length
-    ? `<div class="card mt-4"><h3 class="text-sm text-secondary mb-2">${o.riskTitle}</h3>${flags.map(f => `<span class="risk-pill">⚠️ ${f}</span>`).join("")}</div>` : "";
+    ? `<div class="card mb-4"><h3 class="text-sm text-secondary mb-2">${o.riskTitle}</h3>${flags.map(f => `<span class="risk-pill">⚠️ ${f}</span>`).join("")}</div>` : "";
 
   const typeLabel = STRINGS.step3.projectTypes[state.projectType] || state.projectType || "—";
   const adoptMult = CALC.adoptionToolCount[state.adoptionLevel] ?? 1;
