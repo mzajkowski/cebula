@@ -31,8 +31,14 @@ here — it would double-count intensity. Adoption drives the project token esti
 
 ## Formula 2 — Project cost range
 
+The project baseline is **derived from the monthly team burn** (Formula 1) — not a
+separate fixed rate — so the project number always moves with the team/tools
+configuration. Duration scales it out; the type/adoption/adjustment multipliers scale
+for how token-hungry the work is.
+
 ```
-base = teamHeadcount × baseWeeklyPerPerson × durationWeeks
+weeklyTeamBurn = monthlyBurn / weeksPerMonth          # monthlyBurn from Formula 1
+base = weeklyTeamBurn × durationWeeks
        × projectTypeMultiplier[type] × adoptionToolCount[level] × adjustmentMultiplier
 low  = base × rangeMultipliers.low
 high = base × rangeMultipliers.high
@@ -63,8 +69,8 @@ Consumption multiplier: `light 0.6`, `moderate 1.0`, `heavy 1.5`, `poweruser 2.2
 ### projectTypeMultiplier
 `cms_migration 1.4`, `new_build 1.0`, `ai_feature 2.2`, `integration 1.1`, `discovery 0.6`, `other 1.0`. AI features burn the most tokens; discovery the least.
 
-### baseWeeklyPerPerson
-`35` — baseline weekly € of project AI spend per person.
+### weeksPerMonth
+`52 / 12` (≈4.33) — converts the monthly team burn into the weekly project baseline.
 
 ### tokenPricePerMillion
 `8` — blended € per 1M direct-API tokens (input/output mix, mid-tier models). Drives the variable
@@ -88,8 +94,12 @@ Cebula can derive this locally from brief keywords, or from OpenRouter when a us
 - 1 BA moderate: `20`, 1 QA moderate: `20`
 - **Total ≈ €132/month** (add `selfHostedMonthlyCost` if any)
 
-**Project cost** — headcount 6, base 35, 8 weeks, type 1.4, adoption 2.5, adj 1.0:
-- `base = 6 × 35 × 8 × 1.4 × 2.5 × 1.0 = 5,880`
-- low `4,704`, high `7,644`, **mid €6,174**
+**Project cost** — derived from the €132/mo burn, 8 weeks, type 1.4, adoption 2.5, adj 1.0:
+- `weeklyTeamBurn = 132 / 4.33 = 30.5`
+- `base = 30.5 × 8 × 1.4 × 2.5 × 1.0 = 854`
+- low `683`, high `1,110`, **mid €897**
+
+Note how the project number now tracks the monthly burn: raise seats, tool costs, or add
+self-hosted infra and both figures move together.
 
 Constants are intentionally rough. Contribute real numbers — see CONTRIBUTING.md.

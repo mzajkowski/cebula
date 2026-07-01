@@ -148,13 +148,11 @@ function step3() {
   <label class="block text-sm mb-1">${t.projectNameLabel}</label><input id="pname" class="input w-full mb-4" value="${esc(s.projectName)}" placeholder="${t.projectNamePlaceholder}"/>
   <label class="block text-sm mb-1">${t.projectTypeLabel}</label><div class="seg-grid mb-4">${types}</div>
   <label class="block text-sm mb-1">${t.durationLabel}</label><input id="dur" type="number" min="1" max="104" class="input w-full mb-4" value="${s.projectDurationWeeks}"/>
-  <label class="block text-sm mb-1">${t.baseRateLabel}</label><input id="brate" type="number" min="0" class="input w-full mb-1" value="${s.baseWeeklyPerPerson ?? CALC.baseWeeklyPerPerson}"/><p class="text-secondary text-sm mb-4">${t.baseRateHint}</p>
   <label class="block text-sm mb-1">${t.briefLabel}</label><textarea id="brief" class="input w-full mb-4" rows="4" placeholder="${t.briefPlaceholder}">${esc(s.projectBrief)}</textarea>`;
 }
 function wire3() {
   document.getElementById("pname").addEventListener("input", e => updateState("projectName", e.target.value));
   document.getElementById("dur").addEventListener("input", e => updateState("projectDurationWeeks", +e.target.value || 8));
-  document.getElementById("brate").addEventListener("input", e => updateState("baseWeeklyPerPerson", +e.target.value || CALC.baseWeeklyPerPerson));
   document.getElementById("brief").addEventListener("input", e => updateState("projectBrief", e.target.value));
   document.querySelectorAll(".seg").forEach(b => b.addEventListener("click", () => { updateState("projectType", b.dataset.t); document.querySelectorAll(".seg").forEach(x => x.classList.remove("sel")); b.classList.add("sel"); }));
 }

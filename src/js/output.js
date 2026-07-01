@@ -75,8 +75,8 @@ export function renderOutput(state, estimate) {
   const formulaBurn = `<table class="w-full text-sm"><thead><tr class="text-secondary"><th class="text-left">${o.fRole}</th><th class="text-right">${o.fPeople}</th><th class="text-right">${o.fBasis}</th><th class="text-right">${o.fWeight}</th><th class="text-right">${o.fMonthly}</th></tr></thead><tbody>${formulaBurnRows}${infraFormulaRow}<tr class="font-semibold"><td class="py-1">${o.fTotal}</td><td></td><td></td><td></td><td class="text-right">${formatCurrency(estimate.monthlyBurn)}</td></tr></tbody></table>`;
   const formulaProject = `<table class="w-full text-sm"><thead><tr class="text-secondary"><th class="text-left">${o.fInput}</th><th class="text-right">${o.fValue}</th></tr></thead><tbody>
     <tr><td>${o.fTeamSize}</td><td class="text-right">${totalPeople} people</td></tr>
+    <tr><td>${o.fMonthlyBurn}</td><td class="text-right">${formatCurrencyUnit(mb.total, "/mo")}</td></tr>
     <tr><td>${o.fDuration}</td><td class="text-right">${state.projectDurationWeeks ?? CALC.defaultDurationWeeks} weeks</td></tr>
-    <tr><td>${o.fBaseRate}</td><td class="text-right">${formatCurrencyUnit(state.baseWeeklyPerPerson ?? CALC.baseWeeklyPerPerson, "/person/week")}</td></tr>
     <tr><td>${o.fTypeMult}</td><td class="text-right">${typeMult}× (${typeLabel})</td></tr>
     <tr><td>${o.fAdoptMult}</td><td class="text-right">${adoptMult}× (${STRINGS.step2.adoption[state.adoptionLevel]?.name || state.adoptionLevel})</td></tr>
     <tr><td>${o.fAiAdjust}</td><td class="text-right">${aiAdj}× (${adjSource})</td></tr>
@@ -175,7 +175,7 @@ export function renderOutput(state, estimate) {
     if (infra > 0) rows.push([o.selfHostedRow, "—", "—", Math.round(infra)]);
     rows.push([], ["Project AI cost (" + CURRENCY.code + ")"], ["Low", "Mid", "High"], [Math.round(estimate.project.low), Math.round(estimate.project.mid), Math.round(estimate.project.high)]);
     rows.push([], ["Assumptions"],
-      ["Base rate (" + CURRENCY.code + "/person/week)", state.baseWeeklyPerPerson ?? CALC.baseWeeklyPerPerson],
+      ["Monthly team burn (" + CURRENCY.code + "/mo)", Math.round(mb.total)],
       ["Adoption", STRINGS.step2.adoption[state.adoptionLevel]?.name || state.adoptionLevel],
       ["Project type multiplier", typeMult],
       ["Adoption multiplier", adoptMult],

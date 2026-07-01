@@ -24,7 +24,6 @@ function makeDefault() {
     projectName: "",
     projectType: null,
     projectDurationWeeks: 8,
-    baseWeeklyPerPerson: CALC.baseWeeklyPerPerson,
     projectBrief: "",
     uploadedFileText: "",
     projectAnalysis: null,

@@ -105,11 +105,15 @@ export function analyzeBriefLocally(text) {
 }
 
 // Computes project AI cost as a low/mid/high range.
+// The project baseline is derived from the configured monthly team burn (seats,
+// subscriptions, overrides, infra) — not a separate fixed rate — so the project
+// number moves with the team/tools configuration. Duration scales it out; the
+// type/adoption/adjustment multipliers scale for how token-hungry the work is.
 export function calculateProjectCost(state) {
   // Clamp to valid range — model responses can return values outside spec
   const adj = Math.min(2.5, Math.max(0.5, state.projectAnalysis?.adjustment_multiplier ?? 1.0));
-  const base = totalHeadcount(state)
-    * (state.baseWeeklyPerPerson ?? CALC.baseWeeklyPerPerson)
+  const weeklyTeamBurn = monthlyBreakdown(state).total / CALC.weeksPerMonth;
+  const base = weeklyTeamBurn
     * (state.projectDurationWeeks ?? CALC.defaultDurationWeeks)
     * CALC.projectTypeMultiplier[state.projectType ?? "other"]
     * CALC.adoptionToolCount[state.adoptionLevel]

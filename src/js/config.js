@@ -79,8 +79,6 @@ const STRINGS_RAW = {
       other: "Other",
     },
     durationLabel: "Duration (weeks)",
-    baseRateLabel: "Baseline AI spend per person / week ({symbol})",
-    baseRateHint: "Default {defaultBaseRate} ≈ a Cursor seat plus daily ChatGPT/Claude use. This is the biggest lever on the project number — tune it to your team.",
     briefLabel: "Brief",
     briefPlaceholder: "Paste a short description, scope, or goals…",
     uploadLabel: "Upload a spec, RFP, or brief (optional)",
@@ -124,7 +122,7 @@ const STRINGS_RAW = {
     formulaProjectTitle: "Project cost breakdown",
     fRole: "Role", fPeople: "People", fBasis: "Tool cost basis", fWeight: "Usage weight", fMonthly: "Monthly est.", fTotal: "Total",
     fInput: "Input", fValue: "Value",
-    fTeamSize: "Team size", fDuration: "Duration", fBaseRate: "Base rate", fTypeMult: "Project type multiplier", fAdoptMult: "Adoption multiplier", fAiAdjust: "AI adjustment", fRange: "Estimated range",
+    fTeamSize: "Team size", fDuration: "Duration", fMonthlyBurn: "Monthly team burn", fTypeMult: "Project type multiplier", fAdoptMult: "Adoption multiplier", fAiAdjust: "AI adjustment", fRange: "Estimated range",
     formulaNote: "All base rates and multipliers are in the open source config. Contribute real data at github.com/mzajkowski/cebula.",
     exportTitle: "Export & share",
     exportSubtitle: "Download a copy you can drop into a proposal, a spreadsheet, or send on. No email required.",
@@ -249,6 +247,8 @@ const CALC_EUR = {
   },
   // Baseline weekly AI spend per person on a project (EUR base).
   baseWeeklyPerPerson: 35,
+  // Weeks per month — converts monthly team burn to a weekly project baseline.
+  weeksPerMonth: 52 / 12,
   // Blended per 1M tokens for direct-API usage (EUR base).
   tokenPricePerMillion: 8,
   // Low/high spread around the mid estimate.
